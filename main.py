@@ -1,9 +1,11 @@
-from crewai import Crew
 from textwrap import dedent
+
+from crewai import Crew
+from dotenv import load_dotenv
+
 from trip_agents import TripAgents
 from trip_tasks import TripTasks
 
-from dotenv import load_dotenv
 load_dotenv()
 
 class TripCrew:
