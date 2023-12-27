@@ -1,6 +1,7 @@
-from crewai import Task
-from textwrap import dedent
 from datetime import date
+from textwrap import dedent
+
+from crewai import Task
 
 
 class TripTasks():
