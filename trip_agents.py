@@ -10,6 +10,7 @@ class TripAgents():
 
   def city_selection_agent(self):
     return Agent(
+        llm=OpenAI(temperature=0.7, model_name="gpt-4"),
         role='City Selection Expert',
         goal='Select the best city based on weather, season, and prices',
         backstory=
@@ -22,6 +23,7 @@ class TripAgents():
 
   def local_expert(self):
     return Agent(
+        llm=OpenAI(temperature=0.7, model_name="gpt-4"),
         role='Local Expert at this city',
         goal='Provide the BEST insights about the selected city',
         backstory="""A knowledgeable local guide with extensive information
@@ -34,6 +36,7 @@ class TripAgents():
 
   def travel_concierge(self):
     return Agent(
+        llm=OpenAI(temperature=0.7, model_name="gpt-4"),
         role='Amazing Travel Concierge',
         goal="""Create the most amazong travel itineraries with budget and 
         packing suggestions for the city""",
