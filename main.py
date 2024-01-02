@@ -1,12 +1,8 @@
 import datetime
 import time
 from textwrap import dedent
-
 from crewai import Crew
 from dotenv import load_dotenv
-from tiktoken import Tokenizer
-from tiktoken.models import Model
-
 from trip_agents import TripAgents
 from trip_tasks import TripTasks
 
@@ -79,21 +75,9 @@ if __name__ == "__main__":
       What are some of your high level interests and hobbies?
     """))
 
-def count_tokens(text):
-    tokenizer = Tokenizer()
-    model = Model()
-    tokens = list(tokenizer.tokenize(text))
-    token_count = model.count_tokens(tokens)
-    return token_count
-
-def calculate_cost(token_count):
-    cost_per_token = 20.00 / 1000  # $20 per 1000 tokens
-    cost = token_count * cost_per_token
-    return cost
-
-def save_to_markdown(result, location, date_range, duration, token, cost):
+def save_to_markdown(result, location, date_range, duration):
     date = datetime.datetime.now().strftime("%Y-%m-%d")
-    filename = f"/output/TripPlan_{location}_{date_range.replace(' ', '_')}_{date}.md"
+    filename = f"output/TripPlan_{location}_{date_range.replace(' ', '_')}_{date}.md"
     
     with open(filename, 'w') as f:
         f.write("########################\n")
@@ -102,8 +86,6 @@ def save_to_markdown(result, location, date_range, duration, token, cost):
         f.write(result)
         f.write("\n\n## Additional Information\n")
         f.write(f"Duration: {duration} seconds\n")
-        f.write(f"Token: {token}\n")
-        f.write(f"Cost: {cost}\n")
 
 start_time = time.time()
 trip_crew = TripCrew(location, cities, date_range, interests)
@@ -111,10 +93,4 @@ result = trip_crew.run()
 end_time = time.time()
 duration = end_time - start_time
 
-# Replace with the actual count of tokens in `result`
-token = count_tokens(result)  # You need to define the count_tokens function
-
-# Replace with the actual cost of the tokens
-cost = calculate_cost(token)  # You need to define the calculate_cost function
-
-save_to_markdown(result, location, date_range, duration, token, cost)
+save_to_markdown(result, location, date_range, duration)

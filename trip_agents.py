@@ -1,16 +1,17 @@
 from crewai import Agent
-from langchain.llms import OpenAI
+from langchain.llms import Ollama
 
 from tools.browser_tools import BrowserTools
 from tools.calculator_tools import CalculatorTools
 from tools.search_tools import SearchTools
 
+ollama_dolphinmixtral = Ollama(model="dolphin-mixtral")
 
 class TripAgents():
 
   def city_selection_agent(self):
     return Agent(
-        llm=OpenAI(temperature=0.7, model_name="gpt-4"),
+        llm=ollama_dolphinmixtral,
         role='City Selection Expert',
         goal='Select the best city based on weather, season, and prices',
         backstory=
@@ -23,7 +24,7 @@ class TripAgents():
 
   def local_expert(self):
     return Agent(
-        llm=OpenAI(temperature=0.7, model_name="gpt-4"),
+        llm=ollama_dolphinmixtral,
         role='Local Expert at this city',
         goal='Provide the BEST insights about the selected city',
         backstory="""A knowledgeable local guide with extensive information
@@ -36,7 +37,7 @@ class TripAgents():
 
   def travel_concierge(self):
     return Agent(
-        llm=OpenAI(temperature=0.7, model_name="gpt-4"),
+        llm=ollama_dolphinmixtral,
         role='Amazing Travel Concierge',
         goal="""Create the most amazong travel itineraries with budget and 
         packing suggestions for the city""",
