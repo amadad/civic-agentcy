@@ -5,14 +5,18 @@ from crewai import Agent, Crew, Process, Task
 
 #from langchain.llms import Ollama
 from langchain.chat_models import ChatOllama
-from langchain.tools import DuckDuckGoSearchRun
+
+from tools.browser_tools import BrowserTools
+from tools.search_tools import SearchTools
+
+#from langchain.tools import DuckDuckGoSearchRun
 
 #ollama_dolphinmixtral = ChatOllama(model="dolphin")
-ollama_openhermes = ChatOllama(model="openhermes")
-search_tool = DuckDuckGoSearchRun()
+ollama_hermes2 = ChatOllama(model="nous-hermes2-mixtral")
+#search_tool = DuckDuckGoSearchRun()
+search_tool = SearchTools()
 policy_task = input("Please enter your public policy for research: ")
 
-# Define your agents with roles and goals focusing on policy research and analysis
 policy_analyst = Agent(
   role='Policy Analyst',
   goal='Conduct in-depth policy research and analysis for voter influence',
@@ -21,8 +25,11 @@ policy_analyst = Agent(
   Your expertise includes synthesizing complex policy documents into actionable insights.""",
   verbose=True,
   allow_delegation=False,
-  tools=[search_tool],
-  llm=ollama_openhermes
+  tools=[
+    SearchTools.search_internet,
+    BrowserTools.scrape_and_summarize_website,
+    ],
+  llm=ollama_hermes2
 )
 
 policy_writer = Agent(
@@ -33,7 +40,7 @@ policy_writer = Agent(
   understandable and relevant to the public discourse.""",
   verbose=True,
   allow_delegation=True,
-  llm=ollama_openhermes
+  llm=ollama_hermes2
 )
 
 # Create tasks for your agents
