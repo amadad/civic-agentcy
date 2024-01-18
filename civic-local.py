@@ -1,11 +1,14 @@
+import datetime
 import os
-
-from langchain.llms import Ollama
-from langchain.tools import DuckDuckGoSearchRun
 
 from crewai import Agent, Crew, Process, Task
 
-ollama_dolphinmixtral = Ollama(model="dolphin")
+#from langchain.llms import Ollama
+from langchain.chat_models import ChatOllama
+from langchain.tools import DuckDuckGoSearchRun
+
+#ollama_dolphinmixtral = ChatOllama(model="dolphin")
+ollama_openhermes = ChatOllama(model="openhermes")
 search_tool = DuckDuckGoSearchRun()
 policy_task = input("Please enter your public policy for research: ")
 
@@ -19,7 +22,7 @@ policy_analyst = Agent(
   verbose=True,
   allow_delegation=False,
   tools=[search_tool],
-  llm=ollama_dolphinmixtral
+  llm=ollama_openhermes
 )
 
 policy_writer = Agent(
@@ -30,14 +33,14 @@ policy_writer = Agent(
   understandable and relevant to the public discourse.""",
   verbose=True,
   allow_delegation=True,
-  llm=ollama_dolphinmixtral
+  llm=ollama_openhermes
 )
 
 # Create tasks for your agents
 task1 = Task(
   description=f"""Research and analyze the most recent policies and regulations regarding {policy_task}.
   Examine their implications, effectiveness, and areas for improvement.
-  Produce a comprehensive policy analysis report, detailing your findings and recommendations.""",
+  Your final answer MUST be a full analysis report.""",
   agent=policy_analyst
 )
 
@@ -53,11 +56,19 @@ task2 = Task(
 crew = Crew(
   agents=[policy_analyst, policy_writer],
   tasks=[task1, task2],
-  verbose=2, # You can set it to 1 or 2 to different logging levels
+  verbose=True, # You can set it to 1 or 2 to different logging levels
 )
 
 # Get your crew to work!
 result = crew.kickoff()
 
-print("######################")
-print(result)
+# Specify the path to your existing output directory
+output_folder = "output"
+current_date = datetime.datetime.now().strftime("%B-%d-%Y")
+policy_task_shortened = policy_task[:12]
+output_filename = f"{policy_task_shortened}_{current_date}.md"
+output_file_path = os.path.join(output_folder, output_filename)
+with open(output_file_path, "a") as markdown_file:
+    markdown_file.write(f"# {policy_task}\n\n")
+    markdown_file.write(result)
+print(f"Result saved to {output_file_path}")

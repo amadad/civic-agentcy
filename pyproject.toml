@@ -1,8 +1,9 @@
 [tool.poetry]
-name = "trip-planner-crew"
+name = "civic-agentcy"
 version = "0.1.0"
-description = ""
-authors = ["Your Name <you@example.com>"]
+description = "Policy research and analysis for civic progress"
+authors = ["Ali Madad <ali@scty.org>"]
+packages = [{ include = "**/*.py" }]
 
 [tool.poetry.dependencies]
 python = ">=3.10.0,<3.12"
