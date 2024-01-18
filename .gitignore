@@ -1,6 +1,6 @@
 .venv
 .env
 *workspace
-.DS_Store
 Modelfile
 __pycache__
+.DS_Store
