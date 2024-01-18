@@ -1,29 +1,33 @@
-from crewai import Agent, Task, Crew, Process
+import os
+
 from langchain.llms import Ollama
 from langchain.tools import DuckDuckGoSearchRun
 
+from crewai import Agent, Crew, Process, Task
+
 ollama_dolphinmixtral = Ollama(model="dolphin")
 search_tool = DuckDuckGoSearchRun()
+policy_task = input("Please enter your public policy for research: ")
 
-# Define your agents with roles and goals
-researcher = Agent(
-  role='Senior Research Analyst',
-  goal='Uncover cutting-edge developments in AI and data science in',
-  backstory="""You are a Senior Research Analyst at a leading tech think tank.
-  Your expertise lies in identifying emerging trends and technologies in AI and
-  data science. You have a knack for dissecting complex data and presenting
-  actionable insights.""",
+# Define your agents with roles and goals focusing on policy research and analysis
+policy_analyst = Agent(
+  role='Policy Analyst',
+  goal='Conduct in-depth policy research and analysis for voter influence',
+  backstory=f"""You are a policy analyst at a prominent think tank specializing in {policy_task}.
+  You have a strong background in analyzing the impacts of {policy_task} on society and regulations.
+  Your expertise includes synthesizing complex policy documents into actionable insights.""",
   verbose=True,
   allow_delegation=False,
   tools=[search_tool],
   llm=ollama_dolphinmixtral
 )
-writer = Agent(
-  role='Tech Content Strategist',
-  goal='Craft compelling content on tech advancements',
-  backstory="""You are a renowned Tech Content Strategist, known for your insightful
-  and engaging articles on technology and innovation. With a deep understanding of
-  the tech industry, you transform complex concepts into compelling narratives.""",
+
+policy_writer = Agent(
+  role='Policy Content Writer',
+  goal='Create informative and engaging content on persuasive policy',
+  backstory="""As a skilled writer, you specialize in translating policy research into clear, 
+  engaging articles for a broad audience. You excel in making complex policy issues 
+  understandable and relevant to the public discourse.""",
   verbose=True,
   allow_delegation=True,
   llm=ollama_dolphinmixtral
@@ -31,27 +35,25 @@ writer = Agent(
 
 # Create tasks for your agents
 task1 = Task(
-  description="""Conduct a comprehensive analysis of the latest advancements in AI in 2024.
-  Identify key trends, breakthrough technologies, and potential industry impacts.
-  Compile your findings in a detailed report.""",
-  agent=researcher
+  description=f"""Research and analyze the most recent policies and regulations regarding {policy_task}.
+  Examine their implications, effectiveness, and areas for improvement.
+  Produce a comprehensive policy analysis report, detailing your findings and recommendations.""",
+  agent=policy_analyst
 )
 
 task2 = Task(
-  description="""Using the insights from the researcher's report, develop an engaging blog
-  post that highlights the most significant AI advancements.
-  Your post should be informative yet accessible, catering to a tech-savvy audience.
-  Aim for a narrative that captures the essence of these breakthroughs and their
-  implications for the future.""",
-  agent=writer
+  description=f"""Based on the policy analysis, write an informative article targeting a general audience.
+  The article should highlight key aspects of current {policy_task} policies and their societal impact.
+  Make it engaging and accessible, using language that resonates with non-experts.
+  The final output should be a well-structured article of at least four paragraphs.""",
+  agent=policy_writer
 )
 
 # Instantiate your crew with a sequential process
 crew = Crew(
-  agents=[researcher, writer],
+  agents=[policy_analyst, policy_writer],
   tasks=[task1, task2],
-  verbose=2, # Crew verbose more will let you know what tasks are being worked on, you can set it to 1 or 2 to different logging levels
-  process=Process.sequential # Sequential process will have tasks executed one after the other and the outcome of the previous one is passed as extra content into this next.
+  verbose=2, # You can set it to 1 or 2 to different logging levels
 )
 
 # Get your crew to work!
