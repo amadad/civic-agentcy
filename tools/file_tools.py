@@ -1,24 +1,25 @@
+import datetime
+import os
 from langchain.tools import tool
 
 class FileTools():
 
-  @tool("Write File with content")
-  def write_file(data):
-    """Useful to write a file to a given path with a given content. 
-       The input to this tool should be a pipe (|) separated text 
-       of length two, representing the full path of the file, 
-       including the /workdir/template, and the React 
-       Component code content you want to write to it.
-       For example, `./Keynote/src/components/Hero.jsx|REACT_COMPONENT_CODE_PLACEHOLDER`.
-       Replace REACT_COMPONENT_CODE_PLACEHOLDER with the actual 
-       code you want to write to the file."""
+  @tool("Write Markdown File")
+  def write_file(content):
+    """
+    Useful for writing a markdown file with a given policy task name and content. 
+    The file will be saved in the specified output folder with a name 
+    based on the policy task and the current date.
+    """
     try:
-      path, content = data.split("|")
-      path = path.replace("\n", "").replace(" ", "").replace("`", "")
-      if not path.startswith("./workdir"):
-        path = f"./workdir/{path}"
-      with open(path, "w") as f:
+      # Generate file path and name
+      current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+      output_filename = f"Civic_{current_date}.md"
+      output_file_path = os.path.join("output", output_filename)
+
+      # Write to the file
+      with open(output_file_path, "w") as f:
         f.write(content)
-      return f"File written to {path}."
-    except Exception:
-      return "Error with the input format for the tool."
+      return f"File written to {output_file_path}."
+    except Exception as e:
+      return f"Error writing the file: {e}"
