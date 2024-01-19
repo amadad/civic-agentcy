@@ -61,6 +61,6 @@ crew = Crew(
 
 # Kickoff the Crew Workflow
 results = crew.kickoff()
-results_str = json.dumps(results, indent=4)
-file_output = FileTools.write_file(results_str)
+formatted_content = FileTools.format_to_markdown(results)
+file_output = FileTools.write_file(formatted_content)
 print(file_output)

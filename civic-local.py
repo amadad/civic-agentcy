@@ -1,4 +1,4 @@
-import datetime
+import json
 import os
 
 from crewai import Agent, Crew, Process, Task
@@ -7,12 +7,13 @@ from crewai import Agent, Crew, Process, Task
 from langchain.chat_models import ChatOllama
 
 from tools.browser_tools import BrowserTools
+from tools.file_tools import FileTools
 from tools.search_tools import SearchTools
 
 #from langchain.tools import DuckDuckGoSearchRun
 
 #ollama_dolphinmixtral = ChatOllama(model="dolphin")
-ollama_hermes2 = ChatOllama(model="nous-hermes2-mixtral")
+ollama_neuralbeagle14 = ChatOllama(model="ifioravanti/neuralbeagle14-7b")
 #search_tool = DuckDuckGoSearchRun()
 search_tool = SearchTools()
 policy_task = input("Please enter your public policy for research: ")
@@ -29,7 +30,7 @@ policy_analyst = Agent(
     SearchTools.search_internet,
     BrowserTools.scrape_and_summarize_website,
     ],
-  llm=ollama_hermes2
+  llm=ollama_neuralbeagle14
 )
 
 policy_writer = Agent(
@@ -40,7 +41,7 @@ policy_writer = Agent(
   understandable and relevant to the public discourse.""",
   verbose=True,
   allow_delegation=True,
-  llm=ollama_hermes2
+  llm=ollama_neuralbeagle14
 )
 
 # Create tasks for your agents
@@ -70,12 +71,7 @@ crew = Crew(
 result = crew.kickoff()
 
 # Specify the path to your existing output directory
-output_folder = "output"
-current_date = datetime.datetime.now().strftime("%B-%d-%Y")
-policy_task_shortened = policy_task[:12]
-output_filename = f"{policy_task_shortened}_{current_date}.md"
-output_file_path = os.path.join(output_folder, output_filename)
-with open(output_file_path, "a") as markdown_file:
-    markdown_file.write(f"# {policy_task}\n\n")
-    markdown_file.write(result)
-print(f"Result saved to {output_file_path}")
+results = crew.kickoff()
+results_str = json.dumps(results, indent=4)
+file_output = FileTools.write_file(results_str)
+print(file_output)
