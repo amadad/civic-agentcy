@@ -1,18 +1,15 @@
-import json
 import os
-
-from crewai import Agent, Crew, Process, Task
-from dotenv import load_dotenv
-from langchain.chat_models.openai import ChatOpenAI
-
-from tools.browser_tools import BrowserTools
+from textwrap import dedent
+from crewai import Agent, Task, Crew
+from langchain_openai import ChatOpenAI
 from tools.file_tools import FileTools
-from tools.search_tools import SearchTools
+from tools.search import SearchTools
+from dotenv import load_dotenv
 
 load_dotenv()
 openai_api_key = os.getenv("OPENAI_API_KEY")
-
 policy_task = input("Please enter your public policy for research: ")
+model="gpt-3.5-turbo-1106"
 
 # Define the Policy Analyst Agent
 policy_analyst = Agent(
@@ -21,11 +18,10 @@ policy_analyst = Agent(
   backstory=f"You are a policy analyst specializing in {policy_task}.",
   verbose=True,
   allow_delegation=False,
-  tools=[
-    SearchTools.search_internet,
-    BrowserTools.scrape_and_summarize_website,
+  tools = [
+    SearchTools.search_internet
   ],
-  llm=ChatOpenAI(model_name="gpt-4-1106-preview", temperature=0.7, api_key=openai_api_key)
+  llm=ChatOpenAI(model_name=model, temperature=0.7, api_key=openai_api_key)
 )
 
 # Define the Policy Writer Agent
@@ -36,7 +32,7 @@ policy_writer = Agent(
   verbose=True,
   allow_delegation=True,
   # tools=[FileTools.write_file],
-  llm=ChatOpenAI(model_name="gpt-4-1106-preview", temperature=0.7, api_key=openai_api_key)
+  llm=ChatOpenAI(model_name=model, temperature=0.7, api_key=openai_api_key)
 )
 
 # Define Task 1 - Policy Analysis

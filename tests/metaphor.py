@@ -1,7 +1,6 @@
 import os
-
-from dotenv import load_dotenv
 from metaphor_python import Metaphor
+from dotenv import load_dotenv
 
 load_dotenv()
 metaphor = Metaphor(os.getenv("METAPHOR_API_KEY"))
@@ -14,4 +13,9 @@ response = metaphor.search(
     use_autoprompt=True,
 )
 
-print(response)
+# Get contents from the response
+contents_response = response.get_contents()
+
+# Extract and print only the URLs
+for content in contents_response.contents:
+    print(content.url)
