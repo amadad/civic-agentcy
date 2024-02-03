@@ -6,12 +6,14 @@ from crewai import Agent, Task
 from langchain.tools import tool
 from unstructured.partition.html import partition_html
 
+from langchain.llms import Ollama
 
 class BrowserTools():
 
   @tool("Scrape website content")
   def scrape_and_summarize_website(website):
-    """Useful to scrape and summarize a website content"""
+    """Useful to scrape and summarize a website content, just pass a string with
+    only the full url, no need for a final slash `/`, eg: https://google.com or https://clearbit.com/about-us"""
     url = f"https://chrome.browserless.io/content?token={os.environ['BROWSERLESS_API_KEY']}"
     payload = json.dumps({"url": website})
     headers = {'cache-control': 'no-cache', 'content-type': 'application/json'}
@@ -27,12 +29,14 @@ class BrowserTools():
           'Do amazing researches and summaries based on the content you are working with',
           backstory=
           "You're a Principal Researcher at a big company and you need to do a research about a given topic.",
+          llm=Ollama(model=os.environ['MODEL']),
           allow_delegation=False)
       task = Task(
           agent=agent,
           description=
-          f'Analyze and summarize the content bellow, make sure to include the most relevant information in the summary, return only the summary nothing else.\n\nCONTENT\n----------\n{chunk}'
+          f'Analyze and make a LONG summary the content bellow, make sure to include the ALL relevant information in the summary, return only the summary nothing else.\n\nCONTENT\n----------\n{chunk}'
       )
       summary = task.execute()
       summaries.append(summary)
-    return "\n\n".join(summaries)
+      content = "\n\n".join(summaries)
+    return f'\nScrapped Content: {content}\n'
