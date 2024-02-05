@@ -4,8 +4,9 @@ from langchain_community.llms import OpenAI, Ollama
 from langchain_openai import ChatOpenAI
 from tools.search_tools import SearchTools
 from tools.browser_tools import BrowserTools
+from tools.ExaSearchTool import ExaSearchTool
 
-class CustomAgents:
+class PublicPolicyResearchTasks():
     def __init__(self):
         self.OpenAIGPT35 = ChatOpenAI(model_name="gpt-3.5-turbo-0125", temperature=0.7)
         self.OpenAIGPT4 = ChatOpenAI(model_name="gpt-4", temperature=0.7)
@@ -15,15 +16,16 @@ class CustomAgents:
         return Agent(
             role="Policy Analyst",
             goal=dedent("""\
-                Conduct comprehensive analysis of public policies,
-                focusing on their objectives, effectiveness, and areas for improvement.
-                Provide in-depth insights to guide policy formulation and refinement."""),
+                        Conduct comprehensive analysis of public policies,
+                        focusing on their objectives, effectiveness, and areas for improvement.
+                        Provide in-depth insights to guide policy formulation and refinement."""),
             backstory=dedent("""\
-                As a Policy Analyst at a leading think tank, you specialize in evaluating
-                the impact of public policies on society, economy, and environment."""),
+                             As a Policy Analyst at a leading think tank, you specialize in evaluating
+                             the impact of public policies on society, economy, and environment."""),
             tools=[
-                    BrowserTools.scrape_and_summarize_website,
-                    SearchTools.search_internet
+                ExaSearchTool.tools(),
+                BrowserTools.scrape_and_summarize_website,
+                SearchTools.search_internet
             ],
             allow_delegation=False,
             llm=self.OpenAIGPT35,
@@ -34,12 +36,12 @@ class CustomAgents:
         return Agent(
             role="Stakeholder Engagement Specialist",
             goal=dedent("""\
-                Identify and analyze key stakeholders related to specific policy areas.
-                Develop strategies for engagement and consensus-building."""),
+                        Identify and analyze key stakeholders related to specific policy areas.
+                        Develop strategies for engagement and consensus-building."""),
             backstory=dedent("""\
-                You are a Stakeholder Engagement Specialist, known for your ability
-                to navigate complex policy landscapes and facilitate dialogue between
-                diverse groups to achieve policy objectives."""),
+                             You are a Stakeholder Engagement Specialist, known for your ability
+                             to navigate complex policy landscapes and facilitate dialogue between
+                             diverse groups to achieve policy objectives."""),
             tools=[
                     BrowserTools.scrape_and_summarize_website,
                     SearchTools.search_internet
@@ -52,12 +54,12 @@ class CustomAgents:
         return Agent(
             role="Legislative Affairs Advisor",
             goal=dedent("""\
-                Prepare legislative briefings and recommend policy actions to lawmakers.
-                Synthesize research findings into actionable insights for policy advancement."""),
+                        Prepare legislative briefings and recommend policy actions to lawmakers.
+                        Synthesize research findings into actionable insights for policy advancement."""),
             backstory=dedent("""\
-                As a Legislative Affairs Advisor, you bridge the gap between policy research
-                and legislative action, ensuring that lawmakers have the information they need
-                to make informed decisions."""),
+                             As a Legislative Affairs Advisor, you bridge the gap between policy research
+                             and legislative action, ensuring that lawmakers have the information they need
+                             to make informed decisions."""),
             tools=[
                     BrowserTools.scrape_and_summarize_website,
                     SearchTools.search_internet

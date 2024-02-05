@@ -56,8 +56,3 @@ class FileTools:
             return f"File successfully written to {os.path.abspath(output_file_path)}"
         except Exception as e:
             return f"Error writing the file: {e}"
-
-# Example usage
-# raw_text_content = "Your raw text content..."
-# formatted_content = FileTools.format_to_markdown(raw_text_content)
-# file_output = FileTools.write_file(formatted_content)
