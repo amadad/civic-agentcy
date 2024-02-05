@@ -3,62 +3,64 @@ from crewai import Agent, Task, Crew, Process
 from decouple import config
 from dotenv import load_dotenv
 from textwrap import dedent
-from agents import CustomAgents
+from agents import PublicPolicyResearchAgents
 from tasks import PublicPolicyResearchTasks
 
 load_dotenv()
 os.environ["OPENAI_API_KEY"] = config("OPENAI_API_KEY")
 
-class PublicPolicyCrew:
-    def __init__(self, policy_area, policy_details):
-        self.policy_area = policy_area
-        self.policy_details = policy_details
+tasks = PublicPolicyResearchTasks()
+agents = PublicPolicyResearchAgents()
 
-    def run(self):
-        agents = CustomAgents()
-        tasks = PublicPolicyResearchTasks()
+print("## Welcome to Public Policy Crew")
+print("-------------------------------")
+policy_area = input("Enter the policy area of interest: ")
+policy_details = input("Enter any specific details or context for the policy analysis: ")
 
-        # Define your custom agents and tasks here
-        policy_analyst = agents.policy_analyst_agent()
-        stakeholder_engagement = agents.stakeholder_engagement_agent()
-        legislative_affairs = agents.legislative_affairs_agent()
-        policy_planning = agents.policy_planning_agent()
+# Create Agents
+policy_analyst = agents.policy_analyst_agent()
+stakeholder_engagement = agents.stakeholder_engagement_agent()
+legislative_affairs = agents.legislative_affairs_agent()
+policy_planning = agents.policy_planning_agent()
+policy_report = agents.policy_report_compiler_agent()
 
-        # Custom tasks include agent name and variables as input
-        policy_analysis_task = tasks.policy_analysis(policy_analyst, self.policy_area, self.policy_details)
-        stakeholder_analysis_task = tasks.stakeholder_analysis(stakeholder_engagement, self.policy_area, self.policy_details)
-        legislative_briefing_task = tasks.legislative_briefing(legislative_affairs, self.policy_area, self.policy_details)
-        implementation_plan_task = tasks.implementation_plan(policy_planning, self.policy_area, self.policy_details)
+# Create Tasks
+policy_analysis_task = tasks.policy_analysis(policy_analyst, policy_area, policy_details)
+stakeholder_analysis_task = tasks.stakeholder_analysis(stakeholder_engagement, policy_area, policy_details)
+policy_recommendation = tasks.policy_recommendation(policy_planning, policy_area, policy_details)
+legislative_briefing_task = tasks.legislative_briefing(legislative_affairs, policy_area, policy_details)
+implementation_plan_task = tasks.implementation_plan(policy_planning, policy_area, policy_details)
+policy_report_task = tasks.summary_and_briefing_task(policy_report, [
+    policy_analysis_task,
+    stakeholder_analysis_task,
+    policy_recommendation,
+    legislative_briefing_task,
+    implementation_plan_task
+], policy_area, policy_details)
 
-        # Define the crew
-        policy_crew = Crew(
-            agents=[
+# Create Crew responsible for Copy
+policy_crew = Crew(
+        agents=[
                 policy_analyst, 
                 stakeholder_engagement, 
                 legislative_affairs, 
                 policy_planning, 
+                policy_report
             ],
             tasks=[
                 policy_analysis_task, 
                 stakeholder_analysis_task, 
+                policy_recommendation,
                 legislative_briefing_task, 
                 implementation_plan_task, 
-            ],
-            verbose=True,
+                policy_report_task
+            ]
         )
 
-        result = policy_crew.kickoff()
-        return result
+result = policy_crew.kickoff()
 
-if __name__ == "__main__":
-    print("## Welcome to Public Policy Crew")
-    print("-------------------------------")
-    policy_area = input("Enter the policy area of interest: ")
-    policy_details = input("Enter any specific details or context for the policy analysis: ")
-
-    policy_crew = PublicPolicyCrew(policy_area, policy_details)
-    result = policy_crew.run()
-    print("\n\n########################")
-    print("## Here is your public policy crew run result:")
-    print("########################\n")
-    print(result)
+# Print results
+print("\n\n################################################")
+print("## Here is the result")
+print("################################################\n")
+print(result)
