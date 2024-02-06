@@ -2,6 +2,9 @@ from crewai import Task
 from textwrap import dedent
 
 class PublicPolicyResearchTasks:
+    def __init__(self):
+        pass  # Initialize any necessary attributes
+    
     def __tip_section(self):
         return "If you do your BEST WORK, I'll give you a $10,000 commission!"
 
@@ -20,6 +23,7 @@ class PublicPolicyResearchTasks:
                                    Your final report should offer a comprehensive evaluation of the policy,
                                    highlighting strengths, weaknesses, and recommendations for refinement or future direction."""),
             async_execution=True,
+            max_inter=3,
             agent=agent
         )
 
@@ -37,6 +41,7 @@ class PublicPolicyResearchTasks:
                                    Your final report should map stakeholders, summarize their perspectives
                                    and suggest strategies for engagement or consensus-building."""),
             async_execution=True,
+            max_inter=3,
             agent=agent
         )
     
@@ -56,6 +61,7 @@ class PublicPolicyResearchTasks:
             expected_output=dedent("""\
                                    Your recommendations should be clear, targeted, and feasible,
                                    with a focus on addressing identified issues or capitalizing on opportunities."""),
+            max_inter=3,
             agent=agent
         )
     
@@ -72,6 +78,7 @@ class PublicPolicyResearchTasks:
             expected_output=dedent("""\
                                    Your briefing should be concise, persuasive, and accessible,
                                    aimed at informing decision-making and advancing policy objectives."""),
+            max_inter=3,
             agent=agent
         ) 
     
@@ -86,13 +93,17 @@ class PublicPolicyResearchTasks:
             expected_output=dedent("""\
                                    Your briefing should be comprehensive, structured, persuasive, and accessible,
                                    aimed at informing decision-making and advancing policy objectives."""),
+            max_inter=3,
             agent=agent
         ) 
     
-    def summary_and_briefing_task(self, agent, tasks, policy_area, policy_details):
-    # Assuming tasks is a list of Task objects, you might want to extract summaries or relevant info from each
-    # For simplicity, let's just reference their descriptions or a placeholder here
-        tasks_descriptions = "\n".join([task.description for task in tasks])  # This line is hypothetical and would depend on the actual structure of your Task objects
+    def summary_and_briefing_task(self, agent, completed_tasks, policy_area, policy_details):
+        # Filter out None values from task outputs before joining
+        tasks_outputs = "\n".join([task.output for task in completed_tasks if task.output is not None])
+
+        # Check if tasks_outputs is empty and provide a placeholder message if so
+        if not tasks_outputs:
+            tasks_outputs = "No outputs available from completed tasks."
 
         return Task(
             description=dedent(f"""\
@@ -103,11 +114,8 @@ class PublicPolicyResearchTasks:
                                participants with all necessary information and strategies.
                                Policy area: {policy_area}
                                Details provided: {policy_details}
-                               Briefing includes:
-                               {tasks_descriptions}"""),
-                               expected_output=dedent("""\
-                                                      A well-structured briefing document that includes an executive summary and comprehensive 
-                                                      sections for policy analysis, stakeholder analysis, policy recommendation, legislative briefing, 
-                                                      and implementation plan."""),
-        agent=agent
-    )
+                               Briefing includes outputs from the following tasks:
+                               {tasks_outputs}"""),
+            expected_output="A comprehensive briefing document",
+            agent=agent
+        )
