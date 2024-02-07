@@ -98,24 +98,20 @@ class PublicPolicyResearchTasks:
         ) 
     
     def summary_and_briefing_task(self, agent, completed_tasks, policy_area, policy_details):
-        # Filter out None values from task outputs before joining
-        tasks_outputs = "\n".join([task.output for task in completed_tasks if task.output is not None])
-
-        # Check if tasks_outputs is empty and provide a placeholder message if so
-        if not tasks_outputs:
-            tasks_outputs = "No outputs available from completed tasks."
-
+        detailed_outputs = "\n".join([task.output for task in completed_tasks if task.output is not None])
+        summary_points = [task.output.split('\n')[0] for task in completed_tasks if task.output is not None]  # Extracting first line as summary point
+        executive_summary = "Executive Summary:\n" + "\n".join(summary_points)
+        full_report = f"{executive_summary}\n\nDetailed Information:\n{detailed_outputs}"
+        
         return Task(
             description=dedent(f"""\
                                Compile all the research findings, industry analysis, and strategic
-                               talking points into a concise, comprehensive briefing document for
-                               the meeting.
+                               talking points into a concise, comprehensive briefing document for the meeting.
                                Ensure the briefing is easy to digest and equips the meeting
                                participants with all necessary information and strategies.
                                Policy area: {policy_area}
                                Details provided: {policy_details}
-                               Briefing includes outputs from the following tasks:
-                               {tasks_outputs}"""),
-            expected_output="A comprehensive briefing document",
+                               Briefing includes an executive summary and detailed outputs from the following tasks."""),
+            expected_output=full_report,
             agent=agent
-        )
+    )

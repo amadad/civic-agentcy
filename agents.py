@@ -15,10 +15,10 @@ class PublicPolicyResearchAgents():
     def policy_analyst_agent(self):
         return Agent(
             role="Policy Analyst",
-            goal='Conduct comprehensive analysis of public policies',
+            goal='Recent news and analysis of public policies',
             backstory=dedent("""\
                              As a Policy Analyst at a leading think tank, you specialize in evaluating 
-                             focusing on their objectives, effectiveness, and areas for improvement.
+                             focusing on recent news, objectives, effectiveness, and areas for improvement.
                              Provide in-depth insights to guide policy formulation and refinement.
                              the impact of public policies on society, economy, and environment."""),
             tools=ExaSearchTool.tools(),
