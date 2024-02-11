@@ -22,12 +22,11 @@ class PublicPolicyResearchTasks:
             expected_output=dedent(f"""\
                                    Your final report should offer a comprehensive evaluation of the policy,
                                    highlighting strengths, weaknesses, and recommendations for refinement or future direction."""),
-            async_execution=True,
             max_inter=3,
             agent=agent
         )
 
-    def stakeholder_analysis(self, agent, policy_area, stakeholder_details):
+    def stakeholder_analysis(self, agent, policy_area, policy_details):
         return Task(
             description=dedent(f"""\
                                Identify key stakeholders, their interests, positions, influence, and potential impact on policy outcomes.
@@ -36,28 +35,24 @@ class PublicPolicyResearchTasks:
                                {self.__tip_section()}
                                
                                Conduct a stakeholder analysis for the policy area: {policy_area}.
-                               Stakeholder details: {stakeholder_details}."""),
+                               Additional details provided: {policy_details}."""),
             expected_output=dedent("""\
                                    Your final report should map stakeholders, summarize their perspectives
                                    and suggest strategies for engagement or consensus-building."""),
-            async_execution=True,
             max_inter=3,
             agent=agent
         )
     
-    def policy_recommendation(self, agent, policy_area, analysis_details):
+    def policy_recommendation(self, agent, policy_area, policy_details):
         return Task(
             description=dedent(f"""
-                               Develop policy recommendations based on your analysis of: {policy_area}.
-                               Analysis insights: {analysis_details}.
-                               
                                Propose actionable, evidence-based policy changes or interventions.
                                Include rationale, expected outcomes, and considerations for implementation.
                                
                                {self.__tip_section()}
                                
                                Policy area: {policy_area}
-                               Analysis details: {analysis_details}"""),       
+                               Additional details provided: {policy_details}."""),    
             expected_output=dedent("""\
                                    Your recommendations should be clear, targeted, and feasible,
                                    with a focus on addressing identified issues or capitalizing on opportunities."""),
@@ -65,53 +60,56 @@ class PublicPolicyResearchTasks:
             agent=agent
         )
     
-    def legislative_briefing(self, agent, policy_area, briefing_details):
+    def legislative_briefing(self, agent, policy_area, policy_details):
         return Task(
             description=dedent(f"""\
-                               Summarize key findings, analysis, and recommendations in a format suitable for policymakers.
-                               Highlight the policy's importance, implications, and the urgency for action or revision.
+                               Prepare a legislative briefing that condenses essential findings, strategic analysis, and actionable 
+                               recommendations specifically for legislative stakeholders. Emphasize the implications of the policy for 
+                               law-making, regulatory adjustments, and the critical need for legislative intervention or reform.
                                
                                {self.__tip_section()}
-
+                               
                                Policy area: {policy_area}
-                               Briefing details: {briefing_details}"""),          
+                               Additional details provided: {policy_details}."""),            
             expected_output=dedent("""\
                                    Your briefing should be concise, persuasive, and accessible,
-                                   aimed at informing decision-making and advancing policy objectives."""),
+                                   specifically designed to guide legislative decisions and foster policy advancements."""),
             max_inter=3,
             agent=agent
-        ) 
+    )  
     
-    def implementation_plan(self, agent, policy_area, briefing_details):
+    def implementation_plan(self, agent, policy_area, policy_details):
         return Task(
             description=dedent(f"""\
-                               Summarize key findings, analysis, and recommendations in a format suitable for policymakers.
-                               Highlight the policy's importance, implications, and the urgency for action or revision.
+                               Develop a detailed implementation plan that outlines how to operationalize the key findings and recommendations 
+                               within the specified policy area. This plan should identify actionable steps, potential barriers to implementation, 
+                               and strategies for addressing these challenges.
+                               
                                {self.__tip_section()}
+                               
                                Policy area: {policy_area}
-                               Briefing details: {briefing_details}"""),   
+                               Additional details provided: {policy_details}."""),    
             expected_output=dedent("""\
-                                   Your briefing should be comprehensive, structured, persuasive, and accessible,
-                                   aimed at informing decision-making and advancing policy objectives."""),
+                               Your plan should be comprehensive, structured, and actionable,
+                               providing a clear roadmap for executing policy objectives and ensuring impactful decision-making."""),
             max_inter=3,
             agent=agent
-        ) 
+    ) 
     
-    def summary_and_briefing_task(self, agent, completed_tasks, policy_area, policy_details):
-        detailed_outputs = "\n".join([task.output for task in completed_tasks if task.output is not None])
-        summary_points = [task.output.split('\n')[0] for task in completed_tasks if task.output is not None]  # Extracting first line as summary point
-        executive_summary = "Executive Summary:\n" + "\n".join(summary_points)
-        full_report = f"{executive_summary}\n\nDetailed Information:\n{detailed_outputs}"
-        
+    def summary_and_briefing_task(self, agent, policy_area, policy_details):
         return Task(
             description=dedent(f"""\
-                               Compile all the research findings, industry analysis, and strategic
-                               talking points into a concise, comprehensive briefing document for the meeting.
-                               Ensure the briefing is easy to digest and equips the meeting
+                               Compile all the policy analysis, stakeholder analysis, policy recommendation, legislative briefing, 
+                               and implementation plan points into a concise, comprehensive briefing document.
+
+                               Ensure the briefing is easy to digest and comprehesive to equip
                                participants with all necessary information and strategies.
+                               
                                Policy area: {policy_area}
-                               Details provided: {policy_details}
-                               Briefing includes an executive summary and detailed outputs from the following tasks."""),
-            expected_output=full_report,
+                               Additional details provided: {policy_details}."""),    
+            expected_output=dedent("""\
+                                   A well-structured briefing document that includes an executive summary
+                                   and sections for each of the areas: policy analysis, stakeholder analysis, policy recommendation, legislative briefing, 
+                                   and implementation plan"""),
             agent=agent
-    )
+        )

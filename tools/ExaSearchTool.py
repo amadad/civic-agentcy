@@ -20,15 +20,17 @@ class ExaSearchTool:
 		return ExaSearchTool._exa().find_similar(url, num_results=3)
 
 	@tool
-	def get_contents(ids: list):
+	def get_contents(ids: str):
 		"""Get the contents of a webpage.
 		The ids must be passed in as a list, a list of ids returned from `search`.
 		"""
+		ids = eval(ids)
 		contents = str(ExaSearchTool._exa().get_contents(ids))
 		print(contents)
 		contents = contents.split("URL:")
 		contents = [content[:1000] for content in contents]
 		return "\n\n".join(contents)
+
 
 	@tool
 	def recent_news(query: str, max_items=3):

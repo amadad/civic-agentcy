@@ -5,6 +5,7 @@ from langchain_openai import ChatOpenAI
 from tools.search_tools import SearchTools
 from tools.browser_tools import BrowserTools
 from tools.ExaSearchTool import ExaSearchTool
+from tools.Perplexity_tool import PerplexityTool
 
 class PublicPolicyResearchAgents():
     def __init__(self):
@@ -21,7 +22,9 @@ class PublicPolicyResearchAgents():
                              focusing on recent news, objectives, effectiveness, and areas for improvement.
                              Provide in-depth insights to guide policy formulation and refinement.
                              the impact of public policies on society, economy, and environment."""),
-            tools=ExaSearchTool.tools(),
+            tools=[
+                ExaSearchTool.recent_news,
+            ],
             allow_delegation=False,
             llm=self.OpenAIGPT35,
             verbose=True
@@ -37,8 +40,7 @@ class PublicPolicyResearchAgents():
                              diverse groups to achieve policy objectives. Develop strategies for 
                              engagement and consensus-building."""),
             tools=[
-                    BrowserTools.scrape_and_summarize_website,
-                    SearchTools.search_internet
+                    PerplexityTool,
             ],
             llm=self.OpenAIGPT35,
             verbose=True
@@ -78,19 +80,14 @@ class PublicPolicyResearchAgents():
             verbose=True
         )
     
-    def policy_report_compiler_agent(self):
+    def policy_report_agent(self):
         return Agent(
             role="Policy Report Compiler",
             goal='Compile a comprehensive policy report',
-
             backstory=dedent("""\
-                             As a Policy Report Compiler, you excel in synthesizing diverse insights into comprehensive
-                             reports that guide policymakers, stakeholders, and the public in understanding and navigating
-                             complex policy issues recommendations, and implementation strategies into a cohesive overview."""),
-            tools=[
-                    BrowserTools.scrape_and_summarize_website,
-                    SearchTools.search_internet
-            ],
+                As a Policy Report Compiler, you excel in synthesizing diverse insights into comprehensive
+                reports that guide policymakers, stakeholders, and the public in understanding and navigating
+                complex policy issues recommendations, and implementation strategies into a cohesive overview."""),
             llm=self.OpenAIGPT35,
             verbose=True
         )
