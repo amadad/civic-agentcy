@@ -1,115 +1,93 @@
 from crewai import Task
 from textwrap import dedent
+from pydantic import BaseModel, Field
+from typing import List, Optional
+
+class Policy(BaseModel):
+    name: str
+    date: Optional[int] = None
+    facts: List[str] = Field(..., description="Key facts about the policy, including background and rationale")
+    objectives: List[str] = Field(..., description="The goals or objectives that the policy aims to achieve")
+    stakeholders: List[str] = Field(..., description="A list of stakeholders involved in or affected by the policy")
+    strategies: List[str] = Field(..., description="Strategies and activities planned to achieve the objectives")
+    challenges_and_solutions: List[str] = Field(..., description="Identified challenges and proposed solutions or mitigations")
+    expected_outcomes: List[str] = Field(..., description="The anticipated short-term and long-term results of implementing the policy")
+    impact_assessment: List[str] = Field(..., description="Analysis of potential positive and negative impacts, including on legal and regulatory contexts")
+    evaluation_and_feedback: List[str] = Field(..., description="Criteria and mechanisms for evaluating the policy's effectiveness and collecting stakeholder feedback")
+    resources: List[str] = Field(..., description="Overview of funding sources and other resources necessary for implementation")
+    timeline_and_milestones: List[str] = Field(None, description="The implementation timeline and key milestones")
+    examples_and_precedents: List[str] = Field(..., description="References to similar policies or precedents that inform the current policy")
+
+class TheoryOfChange(BaseModel):
+    policy_name: str
+    policy_area: str
+    development_date: Optional[int] = None
+    underlying_assumptions: List[str] = Field(..., description="Key assumptions underlying the policy's theory of change")
+    long_term_goals: List[str] = Field(..., description="The ultimate goals the policy aims to achieve in the long term")
+    short_term_outcomes: List[str] = Field(..., description="Expected short-term outcomes that lead towards the long-term goals")
+    intermediate_outcomes: List[str] = Field(..., description="Mid-term outcomes that serve as milestones towards achieving long-term goals")
+    activities: List[str] = Field(..., description="Key activities or interventions planned to achieve the outcomes")
+    inputs: List[str] = Field(..., description="Resources and inputs required to carry out the activities")
+    stakeholders_involved: List[str] = Field(..., description="Stakeholders involved in or affected by the policy")
+    contextual_factors: List[str] = Field(..., description="External factors that could influence the policy's success")
+    indicators_of_success: List[str] = Field(..., description="Metrics and indicators used to measure the progress and success of the policy")
+    barriers_to_success: List[str] = Field(..., description="Potential obstacles or challenges that could impede policy success")
+    strategies_for_scaling: List[str] = Field(..., description="Strategies for scaling the policy's impact")
+    mechanisms_for_adaptation: List[str] = Field(..., description="Mechanisms in place for adapting the policy based on feedback and changing circumstances")
+    evidence_base: List[str] = Field(..., description="Evidence or research supporting the policy's approach")
+    feedback_loops: List[str] = Field(..., description="Processes for collecting and integrating feedback from stakeholders and monitoring outcomes")
+    evaluation_plan: List[str] = Field(..., description="Plan for evaluating the policy's effectiveness and impact over time")
 
 class PublicPolicyResearchTasks:
-    def __init__(self):
-        pass  # Initialize any necessary attributes
-    
-    def __tip_section(self):
-        return "If you do your BEST WORK, I'll give you a $10,000 commission!"
-
     def policy_analysis(self, agent, policy_area, policy_details):
         return Task(
             description=dedent(f"""\
                                Conduct comprehensive research the policy's objectives, effectiveness,
                                and areas for improvement. Consider the impact on various stakeholders,
                                and the social, economic, and environmental implications.
-
-                               {self.__tip_section()}
-
                                Analyze the policy area: {policy_area}.
                                Additional details provided: {policy_details}."""),
-            expected_output=dedent(f"""\
-                                   Your final report should offer a comprehensive evaluation of the policy,
-                                   highlighting strengths, weaknesses, and recommendations for refinement or future direction."""),
-            max_inter=3,
-            agent=agent
+            expected_output="Your final report should label and summarize the analysis. Formatted in markdown.",
+            max_inter=2,
+            agent=agent,
+            output_pydantic=Policy,
+            output_file= "output/policy_analysis.md"
         )
 
-    def stakeholder_analysis(self, agent, policy_area, policy_details):
+    def change_analysis(self, agent, policy_area, policy_details):
         return Task(
             description=dedent(f"""\
-                               Identify key stakeholders, their interests, positions, influence, and potential impact on policy outcomes.
-                               Analyze how the policy affects different stakeholders and their likely responses.
-                               
-                               {self.__tip_section()}
-                               
-                               Conduct a stakeholder analysis for the policy area: {policy_area}.
-                               Additional details provided: {policy_details}."""),
-            expected_output=dedent("""\
-                                   Your final report should map stakeholders, summarize their perspectives
-                                   and suggest strategies for engagement or consensus-building."""),
-            max_inter=3,
-            agent=agent
+                               Craft a strategic framework for a {policy_area} in {policy_details} using the TheoryOfChange class. 
+                               Specify the policy's name, area, and development date to provide a foundational overview. Identify underlying 
+                               assumptions and define clear long-term goals, alongside short-term and intermediate outcomes that act as progress 
+                               markers. Outline planned activities, required resources, and stakeholder analysis, including their influence and 
+                               potential responses. Consider external factors affecting the policy's success and detail strategies for overcoming barriers. 
+                               Establish success metrics, adaptation mechanisms, and evidence supporting the policy's approach. Incorporate 
+                               feedback loops for ongoing evaluation and adjustment, ensuring a comprehensive plan for achieving and evaluating 
+                               the policy's impact."""),
+            expected_output="Your final report should label and summarize the analysis. Formatted in markdown.",
+            max_inter=2,
+            agent=agent,
+            output_pydantic=TheoryOfChange,
+            output_file= "output/change_analysis.md"
         )
     
-    def policy_recommendation(self, agent, policy_area, policy_details):
+    def policy_brief(self, agent, policy_analysis, change_analysis):
         return Task(
-            description=dedent(f"""
-                               Propose actionable, evidence-based policy changes or interventions.
-                               Include rationale, expected outcomes, and considerations for implementation.
-                               
-                               {self.__tip_section()}
-                               
-                               Policy area: {policy_area}
-                               Additional details provided: {policy_details}."""),    
+            description=f"Convert JSON {policy_analysis} and {change_analysis} to markdown. Include an executive summary.",
             expected_output=dedent("""\
-                                   Your recommendations should be clear, targeted, and feasible,
-                                   with a focus on addressing identified issues or capitalizing on opportunities."""),
-            max_inter=3,
-            agent=agent
-        )
-    
-    def legislative_briefing(self, agent, policy_area, policy_details):
-        return Task(
-            description=dedent(f"""\
-                               Prepare a legislative briefing that condenses essential findings, strategic analysis, and actionable 
-                               recommendations specifically for legislative stakeholders. Emphasize the implications of the policy for 
-                               law-making, regulatory adjustments, and the critical need for legislative intervention or reform.
-                               
-                               {self.__tip_section()}
-                               
-                               Policy area: {policy_area}
-                               Additional details provided: {policy_details}."""),            
-            expected_output=dedent("""\
-                                   Your briefing should be concise, persuasive, and accessible,
-                                   specifically designed to guide legislative decisions and foster policy advancements."""),
-            max_inter=3,
-            agent=agent
-    )  
-    
-    def implementation_plan(self, agent, policy_area, policy_details):
-        return Task(
-            description=dedent(f"""\
-                               Develop a detailed implementation plan that outlines how to operationalize the key findings and recommendations 
-                               within the specified policy area. This plan should identify actionable steps, potential barriers to implementation, 
-                               and strategies for addressing these challenges.
-                               
-                               {self.__tip_section()}
-                               
-                               Policy area: {policy_area}
-                               Additional details provided: {policy_details}."""),    
-            expected_output=dedent("""\
-                               Your plan should be comprehensive, structured, and actionable,
-                               providing a clear roadmap for executing policy objectives and ensuring impactful decision-making."""),
-            max_inter=3,
-            agent=agent
-    ) 
-    
-    def summary_and_briefing_task(self, agent, policy_area, policy_details):
-        return Task(
-            description=dedent(f"""\
-                               Compile all the policy analysis, stakeholder analysis, policy recommendation, legislative briefing, 
-                               and implementation plan points into a concise, comprehensive briefing document.
-
-                               Ensure the briefing is easy to digest and comprehesive to equip
-                               participants with all necessary information and strategies.
-                               
-                               Policy area: {policy_area}
-                               Additional details provided: {policy_details}."""),    
-            expected_output=dedent("""\
-                                   A well-structured briefing document that includes an executive summary
-                                   and sections for each of the areas: policy analysis, stakeholder analysis, policy recommendation, legislative briefing, 
-                                   and implementation plan"""),
-            agent=agent
-        )
+                                   A well-structured briefing document that includes sections for: 
+                                   #Policy Identification: name, policy_name, date, development_date, policy_area,
+                                   #Executive Summary: 2 paragraph summary,
+                                   #Analysis and Objectives: facts, objectives, long_term_goals, underlying_assumptions,
+                                   #Stakeholders: stakeholders, stakeholders_involved,
+                                   #Strategic Planning: strategies, strategies_for_scaling, activities, inputs,
+                                   #Challenges and Solutions: challenges_and_solutions, barriers_to_success, mechanisms_for_adaptation,
+                                   #Outcomes and Impacts: expected_outcomes, short_term_outcomes, intermediate_outcomes, impact_assessment,
+                                   #Evaluation and Feedback: evaluation_and_feedback, indicators_of_success, feedback_loops, evaluation_plan,
+                                   #Resources and Implementation: resources, timeline_and_milestones,
+                                   #Additional Considerations: examples_and_precedents, contextual_factors, evidence_base
+                                   """),
+            agent=agent,
+            output_file= "output/final_brief.md"
+)

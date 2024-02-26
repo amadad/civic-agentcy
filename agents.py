@@ -1,93 +1,42 @@
 from crewai import Agent
-from textwrap import dedent
-from langchain_community.llms import Ollama
+from tools.search import SearchTools
+from tools.perplexity_tools import PerplexityTool
 from langchain_openai import ChatOpenAI
-from tools.search_tools import SearchTools
-from tools.browser_tools import BrowserTools
-from tools.ExaSearchTool import ExaSearchTool
-from tools.Perplexity_tool import PerplexityTool
-
+    
 class PublicPolicyResearchAgents():
     def __init__(self):
-        self.OpenAIGPT35 = ChatOpenAI(model_name="gpt-3.5-turbo-0125", temperature=0.7)
-        self.OpenAIGPT4 = ChatOpenAI(model_name="gpt-4", temperature=0.7)
-        self.Ollama = Ollama(model="openhermes")
+        self.llm = ChatOpenAI(model_name="gpt-3.5-turbo-0125", temperature=0)
 
-    def policy_analyst_agent(self):
+    def analyst_agent(self):
         return Agent(
             role="Policy Analyst",
             goal='Recent news and analysis of public policies',
-            backstory=dedent("""\
-                             As a Policy Analyst at a leading think tank, you specialize in evaluating 
-                             focusing on recent news, objectives, effectiveness, and areas for improvement.
-                             Provide in-depth insights to guide policy formulation and refinement.
-                             the impact of public policies on society, economy, and environment."""),
-            tools=[
-                ExaSearchTool.recent_news,
-            ],
+            backstory='As a Policy Analyst at a leading think tank, you specialize in evaluating focusing on recent news, objectives, effectiveness, and areas for improvement. Provide in-depth insights to guide policy formulation and refinement. the impact of public policies on society, economy, and environment.',
+            tools=[lambda query: PerplexityTool.perplexity_search(query)],
+            verbose=True,
             allow_delegation=False,
-            llm=self.OpenAIGPT35,
-            verbose=True
+            llm=self.llm
         )
 
-    def stakeholder_engagement_agent(self):
+    def change_agent(self):
         return Agent(
-            role="Stakeholder Engagement Specialist",
+            role="Policy Engagement Specialist",
             goal='Identify and analyze key stakeholders related to specific policy areas',
-            backstory=dedent("""\
-                             You are a Stakeholder Engagement Specialist, known for your ability
-                             to navigate complex policy landscapes and facilitate dialogue between
-                             diverse groups to achieve policy objectives. Develop strategies for 
-                             engagement and consensus-building."""),
-            tools=[
-                    PerplexityTool,
-            ],
-            llm=self.OpenAIGPT35,
-            verbose=True
-        )
-
-    def legislative_affairs_agent(self):
-        return Agent(
-            role="Legislative Affairs Advisor",
-            goal='Prepare legislative briefings and recommend policy actions to lawmakers',
-            backstory=dedent("""\
-                             As a Legislative Affairs Advisor, you bridge the gap between policy research
-                             and legislative action, ensuring that lawmakers have the information they need
-                             to make informed decisions. Synthesize research findings into actionable 
-                             insights for policy advancement."""),
-            tools=[
-                    BrowserTools.scrape_and_summarize_website,
-                    SearchTools.search_internet
-            ],
-            llm=self.OpenAIGPT35,
-            verbose=True
+            backstory='You are a Stakeholder Engagement Specialist, known for your ability to navigate complex policy landscapes and facilitate dialogue between diverse groups to achieve policy objectives. Develop strategies for engagement and consensus-building.',
+            tools=[lambda query: PerplexityTool.perplexity_search(query)],
+            verbose=True,
+            allow_delegation=False,
+            llm=self.llm
         )
     
-    def policy_planning_agent(self):
+    def policy_writer(self):
         return Agent(
-            role="Policy Planning Specialist",
-            goal='Develop implementation plans for policy recommendations',
-            backstory=dedent("""\
-                             You're a Policy Planning Specialist with expertise in transforming policy
-                             recommendations into actionable plans, ensuring their successful execution
-                             and impact assessment. Outline steps for adoption, execution, and 
-                             evaluation of policies."""),
-            tools=[
-                    BrowserTools.scrape_and_summarize_website,
-                    SearchTools.search_internet
-            ],
-            llm=self.OpenAIGPT35,
-            verbose=True
-        )
+            role="Senior Policy Brief Writer",
+            goal="Write engaging and interesting blog post about latest AI projects using simple, layman vocabulary",
+            backstory='You are an Expert Writer on technical, social, policitical and social matters. Be informative and engaging.',
+            verbose=True,
+            allow_delegation=False,
+            llm=self.llm
+)
     
-    def policy_report_agent(self):
-        return Agent(
-            role="Policy Report Compiler",
-            goal='Compile a comprehensive policy report',
-            backstory=dedent("""\
-                As a Policy Report Compiler, you excel in synthesizing diverse insights into comprehensive
-                reports that guide policymakers, stakeholders, and the public in understanding and navigating
-                complex policy issues recommendations, and implementation strategies into a cohesive overview."""),
-            llm=self.OpenAIGPT35,
-            verbose=True
-        )
+    #SearchTools.search_internet
