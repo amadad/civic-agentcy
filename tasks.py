@@ -5,12 +5,24 @@ class PolicyTasks:
     def research_policy_issues_task(self, agent, policy_topic, research_questions):
         return Task(
             description=dedent(f"""\
-                Investigate current policy debates and evidence on "{policy_topic}". Address the research questions: "{research_questions}". 
-                Gather relevant data, studies, and expert opinions to understand the scope, impact, and perspectives related to the policy issue.
-                Compile a report summarizing key findings, data insights, and expert viewpoints to inform the policy brief."""),
+                Investigate the current debates and evidence surrounding "{policy_topic}", focusing on specific research questions: "{research_questions}". 
+                Collect and analyze data, studies, and expert opinions to understand the policy's implications, stakeholders' perspectives, and the evidence base.
+                Summarize the findings, highlighting key insights, divergent viewpoints, and the evidence supporting various positions to inform policy development."""),
             expected_output=dedent("""\
-                A comprehensive report detailing findings on the policy topic, including data insights, expert opinions, and relevant studies. 
-                This report should lay the foundation for developing informed and evidence-based policy recommendations."""),
+                A detailed report that synthesizes research on the policy issue, incorporating data analysis, expert perspectives, and study outcomes. 
+                The report aims to provide a solid evidence base for crafting policy briefs and recommendations, addressing the posed research questions."""),
+            agent=agent
+        )
+    
+    def decision_making_and_legislation_task(self, agent, policy_topic, external_factors):
+        return Task(
+            description=dedent(f"""\
+                Assess how {external_factors} like economic conditions and technological advancements influence the legislative process for "{policy_topic}". 
+                Identify the main challenges and opportunities for the policy within legislative debates, considering political and societal contexts.
+                Propose strategies to navigate the legislative environment, build consensus among decision-makers, and enhance the policy's legislative success."""),
+            expected_output=dedent("""\
+                A strategic report outlining the interplay between external factors and the policy's journey through the legislative process. 
+                The report should offer actionable advice for overcoming barriers, engaging with key stakeholders, and improving the chances of policy enactment."""),
             agent=agent
         )
 
@@ -48,18 +60,6 @@ class PolicyTasks:
             expected_output=dedent("""\
                 A polished, final version of the policy brief that is clear, compelling, and aligned with advocacy goals. 
                 Feedback on improvements and final approval for dissemination. Formatted in markdown."""),
-            agent=agent
-        )
-
-    def industry_and_policy_impact_analysis_task(self, agent, policy_topic, external_factors):
-        return Task(
-            description=dedent(f"""\
-                Conduct a comprehensive analysis of how external factors such as economic trends, societal issues, and technological advancements impact the policy topic: "{policy_topic}". 
-                Evaluate the interaction between these factors and the policy landscape, identifying potential challenges and opportunities for policy implementation.
-                Analyze how the policy could influence industry practices, societal norms, and technological innovation. 
-                Include insights on leveraging these impacts to strengthen the policy recommendations and their expected outcomes."""),
-            expected_output=dedent("""\
-                An in-depth analysis report that highlights the interplay between the policy topic and external factors. 
-                The report should offer strategic insights on enhancing the policy's effectiveness and leveraging industry, societal, and technological trends to support policy objectives."""),
-            agent=agent
+            agent=agent,
+            output_file="policy_brief.md"
         )

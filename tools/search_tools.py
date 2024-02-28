@@ -79,30 +79,68 @@ def perplexity_search(user_query: str) -> str:
         return response.choices[0].message.content
     except Exception as e:
         return f"An error occurred: {str(e)}"
-
 @tool("AI Snippets Search")
-def you_search(query: str) -> str:
+def you_search(query: str) -> dict:
     """
-    Searches for AI-generated snippets based on a given query using the YDC Index API.
-    This tool fetches and returns AI-generated content snippets relevant to the query.
-    """
-    ydc_api_key = os.getenv('YDC_API_KEY')
-    if not ydc_api_key:
-        raise ValueError("YDC_API_KEY environment variable not set")
+    Fetches AI-generated snippets based on the given query from the YDC Index API.
     
-    headers = {"X-API-Key": ydc_api_key}
-    params = {"query": query}
-    response = requests.get(
-        "https://api.ydc-index.io/search",
-        params=params,
-        headers=headers,
-    )
+    Args:
+        query (str): The search query to fetch snippets for.
+    
+    Returns:
+        dict: A JSON object containing the API response.
+    """
+    you_api_key = os.getenv('YOU_API_KEY')
+    headers = {"X-API-Key": you_api_key}
     try:
-        results = response.json()
-    except ValueError:  # includes simplejson.decoder.JSONDecodeError
-        return "Failed to decode JSON response."
+        response = requests.get(
+            f"https://api.ydc-index.io/news",
+            params={"q": query},
+            headers=headers,
+        )
+        response.raise_for_status()  # Raises an error for bad responses
+        return response.json()
+    except requests.RequestException as e:
+        return {"error": str(e)}
+@tool("AI Snippets Search")
+def you_search(query: str) -> list:
+    """
+    Fetches AI-generated snippets based on the given query from the YDC Index API,
+    parses the JSON response, and returns the relevant parts of the search results.
 
-    # Formatting the results for readability or further processing
-    formatted_results = '\n'.join([f"Title: {item['title']}\nSnippet: {item['snippet']}\n-----------------" for item in results.get('results', [])])
-    
-    return formatted_results if formatted_results else "No results found."
+    Args:
+        query (str): The search query to fetch snippets for.
+
+    Returns:
+        list: A list of dictionaries, each containing the title, description, and URL of a search result.
+    """
+    you_api_key = os.getenv('YOU_API_KEY')
+    headers = {"X-API-Key": you_api_key}
+    try:
+        response = requests.get(
+            f"https://api.ydc-index.io/news",
+            params={"q": query},
+            headers=headers,
+        )
+        response.raise_for_status()  # Raises an error for bad responses
+        json_response = response.json()
+
+        # Parsing the JSON response
+        results = json_response.get('news', {}).get('results', [])
+        parsed_results = []
+
+        for result in results:
+            title = result.get('title')
+            description = result.get('description')
+            url = result.get('url')
+
+            if title and description and url:
+                parsed_results.append({
+                    'title': title,
+                    'description': description,
+                    'url': url
+                })
+
+        return parsed_results
+    except requests.RequestException as e:
+        return [{"error": str(e)}]

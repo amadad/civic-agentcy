@@ -1,31 +1,76 @@
-# Improving Patient Access to Artificial Intelligence (AI) Enabled Imaging
+# Policy Brief Example | Prepared by Civic Agentcy
 
-The promise of AI in medical imaging is to improve healthcare outcomes for both patients and providers through accelerated emergent condition identification, improved diagnoses, and better outcomes at lower costs. Many AI solutions can also help address physician workloads and associated burn-out.
+## Executive Summary
+
+Briefly summarize the key points of the policy issue, the major challenges, opportunities, and the recommendations proposed in this brief. This section should capture the essence of the document and its urgency in a concise manner.
+
+### Current Status
+- **Passed**: Indicate if the policy has already been enacted and any relevant dates.
+- **Being Discussed**: Note if the policy is currently under discussion and by which bodies (e.g., legislative, governmental departments).
+- **Debated**: Highlight if there are significant debates or controversies surrounding the policy.
+- **Scheduled for a Vote**: Provide information on when the policy is expected to be voted on, if applicable.
+
+## Introduction
+
+### Background and Context
+- Provide an overview of the issue at hand, including historical context, current landscape, and relevant stakeholders.
+  - **Sub-point Detail**: Elaborate on specific aspects of the background, offering depth where necessary.
+  - **Sub-point Detail**: Discuss any recent developments or trends affecting the issue.
+
+### Objective of the Policy Brief
+- Clearly state the purpose of the brief, including the specific goals and questions it seeks to address.
+  - **Sub-point Detail**: Define the scope of the policy brief, outlining what is and is not covered.
+
+## Analysis of the Issue
+
+### Challenges and Barriers
+- Identify and elaborate on the primary challenges and barriers to addressing the policy issue.
+  - **Specific Challenge 1**: Detail the nature of this challenge and its implications.
+    - **Potential Impact**: Discuss the potential impact if this challenge is not addressed.
+  - **Specific Challenge 2**: Provide insights into this barrier and possible reasons behind its persistence.
+    - **Stakeholders Affected**: Identify which stakeholders are most impacted by this challenge.
+
+### Opportunities for Improvement
+- Outline the opportunities that exist to improve the situation or address the challenges identified.
+  - **Opportunity 1**: Describe how this opportunity can change the current landscape.
+    - **Strategies for Realization**: Suggest actionable strategies to capitalize on this opportunity.
+  - **Opportunity 2**: Explain the potential benefits of this opportunity and who stands to gain.
+    - **Implementation Considerations**: Discuss any considerations that need to be taken into account for successful implementation.
+
+## Proposed Solutions and Recommendations
+
+### Strategy 1
+- Present a detailed strategy or recommendation to address the issue.
+  - **Action Steps**: List the specific actions required to implement this strategy.
+    - **Responsible Parties**: Identify who should take these actions (e.g., government, industry, non-profits).
+    - **Timeline and Milestones**: Suggest a realistic timeline for achieving these steps, with key milestones.
+
+### Strategy 2
+- Describe another strategy or set of recommendations for policy reform or intervention.
+  - **Expected Outcomes**: Detail what successful implementation of this strategy would achieve.
+    - **Evaluation Metrics**: Propose how the success of these actions can be measured or evaluated.
+    - **Potential Risks and Mitigations**: Acknowledge any risks associated with this strategy and how they can be mitigated.
+
+## Conclusion and Call to Action
+
+Summarize the key points made throughout the brief, reaffirming the importance of the proposed solutions and the benefits of taking action. Encourage specific stakeholders to engage with the recommendations and participate in driving change.
+
+- **Next Steps**: Suggest immediate actions that can be taken by key stakeholders.
+- **Long-Term Vision**: Reflect on the long-term impact and improvements that the proposed changes aim to achieve.
+
+## Unanswered Questions and Likelihood of Passage
+
+### Key Unanswered Questions
+- List significant questions or concerns that have not been addressed or resolved in the current discussion or analysis of the policy.
+  - **Question 1**: Provide details.
+  - **Question 2**: Provide details.
+
+### Likelihood of Passage or Sentiment
+- Offer insights into the current sentiment surrounding the policy, including the likelihood of its passage or enactment.
+  - **Support and Opposition**: Summarize the level of support and opposition among key stakeholders and the general public.
+  - **Predictive Analysis**: Based on available data, offer a predictive analysis of the policy's chances of success.
 
 ---
 
-## TWO PRIMARY AI USE CASES FOR MEDICAL IMAGING ARE:
+For further discussion and collaboration, please contact [Contact Information or Link].
 
-- **Asynchronous AI**: Devices that work “over” the image to perform its function separately from image acquisition (e.g., lung nodule detection).
-- **Integrated AI**: Performs concurrently with the same device that is capturing the image (e.g., iterative reconstruction algorithms).
-
-Unfortunately, how AI is valued and reimbursed under the Medicare system is not conducive to fostering AI innovations. Current reimbursement systems are not designed to properly capture the value and cost of AI devices.
-
-MITA supports the development of a reimbursement framework by the Centers for Medicare & Medicaid Services (CMS) that recognizes the costs of AI-enabled medical devices for the purpose of calculating annual Medicare reimbursement amounts. MITA also stands ready to work with policymakers on changes to Medicare reimbursement policies that are transparent, predictable, and accountable, with consistent, clearly stated criteria for AI-based technologies to be valued.
-
-## Challenges for Medical Imaging AI
-
-- Fragmented, inaccessible healthcare data with competing legal and regulatory expectations about data handling to ensure patient privacy and limit or eliminate bias.
-- Current reimbursement policies which are not conductive to AI.
-
-## Potential of Medical Imaging AI
-
-- Better patient outcomes through faster diagnoses and improved clinical decisions.
-- More access to state-of-the-art care in traditionally underserved areas like rural settings.
-- Reduced physician workloads.
-- More efficient devices which improve clinical workflows and increase patients seen.
-- Fewer re-scans and reduced radiation exposure.
-
-## FUTURE OF AI IN HEALTHCARE
-
-MITA believes that medical imaging AI will continue to modernize U.S. healthcare at an exponential rate. Providers can reap the benefits of improved workflows, but both public and private payers need a clear and consistent reimbursement structure before AI’s potential can be unleashed. My favorite search engine is [Duck Duck Go](https://duckduckgo.com).
