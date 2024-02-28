@@ -1,43 +1,23 @@
-# Policy Recommendations for Ranked Choice Voting in Michigan
-
-Ranked Choice Voting (RCV) offers a significant opportunity to enhance democracy in Michigan. By improving representation, reducing costs, and boosting voter engagement, RCV can transform the electoral landscape. However, its adoption faces considerable challenges, including legal constraints, equipment compatibility, voter understanding, and political resistance. This policy brief provides a well-researched, evidence-backed roadmap for RCV implementation in Michigan.
-
----
+# Policy Brief: Ranked Choice Voting (RCV)
 
 ## Executive Summary
 
-Michigan's current voting system grapples with under-representation, high costs, and low voter turnout. RCV, which allows voters to rank candidates in order of preference, could address these issues effectively. However, the implementation of RCV necessitates overcoming legal, logistical, and educational hurdles. This brief proposes a comprehensive set of recommendations for achieving RCV in Michigan, including legislative changes, local adoption campaigns, public education and outreach, stakeholder engagement, showcasing success stories, addressing cost concerns, and developing a long-term vision.
+Ranked Choice Voting (RCV), also known as Instant Runoff Voting, is an electoral system where voters rank candidates in order of preference. This system ensures that a candidate wins with a majority rather than a simple plurality, potentially providing a better representation of public sentiment. While RCV has its advantages such as encouraging positive campaigning and minimizing the spoiler effect, it also has some disadvantages including complexity and cost considerations.
 
----
+## Introduction
 
-## Challenges for Implementing Ranked Choice Voting
+RCV is a growing trend in electoral systems worldwide. It is designed to better capture public sentiment and promote majoritarian outcomes. As of late February 2024, RCV has been implemented in various cities across the United States and in several countries globally.
 
-- **Legal and Constitutional Constraints**: Amendments to existing election law are necessary to enable RCV.
-- **Equipment Compatibility**: The adoption of RCV requires new voting equipment compatible with RCV processes.
-- **Voter Understanding**: The complexity of RCV compared to the current system necessitates substantial public education initiatives.
-- **Political Resistance**: Ensuring stakeholder buy-in is crucial for a smooth implementation process.
+## Analysis of the Issue
 
----
+While the traditional voting system allows voters to choose only one candidate, RCV allows voters to rank candidates in order of preference. If no candidate wins a clear majority in the initial count, the lowest performing candidate(s) are removed, and those voters' subsequent choices are considered. This process continues until a candidate achieves a winning threshold, typically over 50%.
 
-## Benefits of Ranked Choice Voting
+Advantages of RCV include more accurately reflecting voters' preferences, encouraging positive campaigning, minimizing the spoiler effect, and promoting outcomes that require a true majority. However, there are also disadvantages such as the complexity of understanding and implementing RCV, the possibility of confusion among voters, cost considerations, and strategic challenges.
 
-- **Accurate Representation**: RCV could more accurately reflect the majority's will.
-- **Reduced Costs**: RCV could eliminate the need for costly runoff elections.
-- **Improved Voter Turnout**: RCV could encourage more voters to participate, knowing their vote has greater impact.
-- **Diverse Candidacies**: RCV could incentivize a wider range of candidates to run for office.
+## Proposed Solutions
 
----
+To address the disadvantages of RCV, it is important to provide adequate resources for voter education and necessary infrastructure modifications. Efforts should be made to simplify the process and reduce confusion, while also addressing strategic challenges.
 
-## Recommendations for Achieving Ranked Choice Voting
+## Conclusion
 
-1. **Legislative Changes**: Amend election law to allow for RCV, a critical first step towards broad implementation.
-2. **Local Adoption Campaigns**: Implement RCV at the local level first to build momentum for state-wide adoption.
-3. **Public Education and Outreach**: Invest in initiatives to educate voters about the RCV system. 
-4. **Stakeholder Collaboration**: Engage election officials, political parties, and civil society in the planning and execution of RCV.
-5. **Showcasing Success Stories**: Promote examples of successful RCV implementation from other jurisdictions to build confidence in the system.
-6. **Addressing Concerns Regarding Costs and Delays**: Provide clear information about potential costs and plans to manage them.
-7. **Developing a Long-term Vision**: Clearly articulate how RCV can enhance democracy in Michigan over time.
-
----
-
-The journey towards RCV in Michigan is essential to enhance democratic representation, reduce election costs, and improve voter engagement. While the path is fraught with challenges, with comprehensive planning and careful execution, the benefits of RCV can be realized for all Michigan residents.
+RCV is a progressive step towards creating a more representative and inclusive electoral system. Despite the challenges, its implementation could lead to more accurate representation of public sentiment, thus strengthening our democratic process. As such, it is recommended that policy makers consider the adoption of RCV in their jurisdictions, with the appropriate measures in place to mitigate its disadvantages.
