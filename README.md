@@ -1,5 +1,6 @@
 # Civic Agentcy 🗳️
-**Civic Agentcy** is a comprehensive framework designed to automate the process of analyzing public policies, engaging stakeholders, preparing legislative briefings, developing policy recommendations, and compiling detailed reports. Utilizing a combination of advanced language models and web scraping tools, this project aims to provide in-depth insights that guide policy formulation, refinement, and implementation planning.
+
+The process of analyzing public policies, engaging stakeholders, and generating actionable insights is often complex and time-consuming, lacking efficiency and clarity. **Civic Agentcy** is a comprehensive framework designed to automate the process of analyzing public policies, engaging stakeholders, preparing legislative briefings, developing policy recommendations, and compiling detailed reports. Utilizing a combination of advanced language models and realtime retrieval tools, this project aims to provide in-depth insights that guide policy formulation, refinement, and implementation planning.
 
 **Civic Agentcy** is a sophisticated framework designed for public policy analysis and development. 
 
