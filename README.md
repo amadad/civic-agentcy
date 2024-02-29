@@ -45,10 +45,10 @@ The Civic Agentcy framework is designed to automate and streamline various tasks
 
 Current tools include:
 
-- **SerpeApi**: Leverages `serpapi` for in-depth searches across the web, targeting specific policy areas.
-- **Perplexity Search Tool**: Applies `perplexity_search` for advanced, context-aware searches to uncover nuanced policy insights.
-- **You Search Tool**: Uses `you_search` for targeted information retrieval, honing in on specific policy-related queries.
-- **Exa Search Tool**: Employs `exa_search` for comprehensive searches, focusing on detailed information within policy sectors.
+- **SerpApi**: Leverages `serpapi` for in-depth searches across the web, targeting specific policy areas.
+- **Perplexity**: Applies `perplexity_search` for advanced, context-aware searches to uncover nuanced policy insights.
+- **You Search**: Uses `you_search` for targeted information retrieval, honing in on specific policy-related queries.
+- **Exa Search**: Employs `exa_search` for comprehensive searches, focusing on detailed information within policy sectors.
 - **File Tools**: Accesses and reads policy brief documents via the `file_read_tool`, facilitating direct analysis of policy texts.
 
 This project utilizes the [CrewAI](https://www.crewai.io) powered by [LangChain](https://www.langchain.com) to define agents and tasks that automate the analysis and reporting process. 
