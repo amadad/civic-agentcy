@@ -1,7 +1,4 @@
 # Civic Agentcy 🗳️
-
-## Overview
-
 **Civic Agentcy** is a comprehensive framework designed to automate the process of analyzing public policies, engaging stakeholders, preparing legislative briefings, developing policy recommendations, and compiling detailed reports. Utilizing a combination of advanced language models and web scraping tools, this project aims to provide in-depth insights that guide policy formulation, refinement, and implementation planning.
 
 **Civic Agentcy** is a sophisticated framework designed for public policy analysis and development. 
@@ -12,7 +9,7 @@
 * **Policy Recommendations**: Generates actionable, evidence-based recommendations.
 * **Report Compilation**: Compiles in-depth reports, enhancing policy formulation and implementation.
 
-# User Input
+## User Input
 
 Through a streamlit app, users can input the following information:
 
