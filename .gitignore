@@ -9,3 +9,5 @@ archive
 tryagain/
 report/
 db/
+test/
+test.py

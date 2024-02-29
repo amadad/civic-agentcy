@@ -1,7 +1,7 @@
 from crewai import Agent
 from crewai_tools.tools import WebsiteSearchTool, SeperDevTool, FileReadTool
 from tools.search_tools import search_internet, perplexity_search, you_search
-from tools.exa_tools import ExaSearchTool
+from archive.exa_tools import ExaSearchTool
 
 web_search_tool = WebsiteSearchTool()
 seper_dev_tool = SeperDevTool()
