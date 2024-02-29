@@ -1,29 +1,49 @@
 from textwrap import dedent
 from crewai import Task
+from typing import List, Optional
+from pydantic import BaseModel, Field
+
+class PolicyResearch(BaseModel):
+    policy_topic: str
+    research_questions: List[str] = Field(..., description="Specific research questions guiding the investigation")
+    current_status: List[str] = Field(..., description="Overview of the policy's current status and relevant debates")
+    stakeholder_perspectives: List[str] = Field(..., description="Analysis of different stakeholders' views and opinions")
+    evidence_base: List[str] = Field(..., description="Empirical evidence supporting various positions on the policy")
+    key_findings: List[str] = Field(..., description="Summary of key insights and divergent viewpoints identified through research")
+
+class PolicyLegislation(BaseModel):
+    policy_topic: str
+    external_factors: List[str] = Field(..., description="External factors like economic conditions and technological advancements affecting the policy")
+    legislative_challenges: List[str] = Field(..., description="Main challenges within legislative debates")
+    opportunities_for_policy: List[str] = Field(..., description="Opportunities for the policy within the current political and societal context")
+    consensus_building_strategies: List[str] = Field(..., description="Strategies to build consensus among decision-makers")
+    legislative_success_strategies: List[str] = Field(..., description="Actionable advice for enhancing the policy's legislative success")
 
 class PolicyTasks:
     def research_policy_issues_task(self, agent, policy_topic, research_questions):
         return Task(
             description=dedent(f"""\
-                Investigate the current debates and evidence surrounding "{policy_topic}", focusing on specific research questions: "{research_questions}". 
-                Collect and analyze data, studies, and expert opinions to understand the policy's implications, stakeholders' perspectives, and the evidence base.
-                Summarize the findings, highlighting key insights, divergent viewpoints, and the evidence supporting various positions to inform policy development."""),
+                Investigate the current status, debates, and evidence related to "{policy_topic}", focusing on specific research questions: "{research_questions}". 
+                Collect and analyze recent developments, stakeholder opinions, and empirical evidence to grasp the policy's current situation and its potential impacts.
+                Summarize the findings to highlight critical insights, conflicting views, and the evidence base supporting different perspectives to aid in policy brief formulation."""),
             expected_output=dedent("""\
-                A detailed report that synthesizes research on the policy issue, incorporating data analysis, expert perspectives, and study outcomes. 
-                The report aims to provide a solid evidence base for crafting policy briefs and recommendations, addressing the posed research questions."""),
-            agent=agent
+                A comprehensive report synthesizing research on the policy topic, integrating data analysis, stakeholder perspectives, and recent studies. 
+                This report aims to offer a robust evidence base for formulating policy briefs and recommendations, effectively addressing the specified research questions."""),
+            agent=agent,
+            output_pydantic=PolicyResearch
         )
-    
+
     def decision_making_and_legislation_task(self, agent, policy_topic, external_factors):
         return Task(
             description=dedent(f"""\
-                Assess how {external_factors} like economic conditions and technological advancements influence the legislative process for "{policy_topic}". 
-                Identify the main challenges and opportunities for the policy within legislative debates, considering political and societal contexts.
-                Propose strategies to navigate the legislative environment, build consensus among decision-makers, and enhance the policy's legislative success."""),
+                Evaluate how {external_factors} such as economic conditions, technological advancements, and public opinion trends affect the legislative process and decision-making for "{policy_topic}". 
+                Examine the policy's main legislative challenges and opportunities, taking into account political dynamics, societal expectations, and recent news or events.
+                Suggest strategies for navigating the legislative landscape, achieving consensus among policymakers, and optimizing the policy's chances of successful enactment."""),
             expected_output=dedent("""\
-                A strategic report outlining the interplay between external factors and the policy's journey through the legislative process. 
-                The report should offer actionable advice for overcoming barriers, engaging with key stakeholders, and improving the chances of policy enactment."""),
-            agent=agent
+                A strategic framework that elucidates the relationship between external factors and the legislative progression of the policy. 
+                This framework should provide pragmatic recommendations for addressing legislative challenges, engaging stakeholders, and leveraging opportunities to facilitate policy approval."""),
+            agent=agent,
+            output_pydantic=PolicyLegislation
         )
 
     def analyze_policy_options_task(self, agent, policy_topic):
