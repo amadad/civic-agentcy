@@ -15,20 +15,23 @@ Civic Agentcy is a sophisticated framework designed for public policy analysis a
 This framework empowers policymakers with data-driven insights, optimizing the public policy lifecycle.
 
 Custom Agents
-* Policy Analyst: Conducts a comprehensive analysis of public policies, focusing on objectives, effectiveness, and areas for improvement.
-* Stakeholder Engagement Specialist: Identifies and analyzes key stakeholders, developing strategies for engagement and consensus-building.
-* Legislative Affairs Advisor: Prepares legislative briefings and recommends policy actions to lawmakers.
-* Policy Planning Specialist: Develops implementation plans for policy recommendations.
-* Policy Report Compiler: Compiles comprehensive policy reports integrating analysis, stakeholder perspectives, and recommendations.
+
+The Civic Agentcy framework is equipped with a suite of custom agents designed to streamline and enhance the policy analysis and development process. Each agent is specialized in a specific aspect of policy work, leveraging advanced tools and methodologies to deliver high-quality outcomes.
+
+* **Policy Researcher**: This agent is tasked with investigating current policy issues, trends, and evidence through comprehensive web and database searches. It gathers relevant data and insights, utilizing tools like `you_search` to navigate complex policy landscapes.
+* **Policy Writer**: The Policy Writer agent is skilled in crafting detailed, engaging, and impactful policy briefs. It uses insights from the Policy Researcher and employs tools such as `perplexity_search`, `search_internet`, and `file_read_tool` to articulate insights, key trends, and evidence-based recommendations.
+* **Policy Brief Reviewer**: This agent critically reviews draft policy briefs for coherence, alignment with policy objectives, evidence strength, and persuasive clarity. It refines content to ensure high-quality, impactful communication, utilizing `search_internet` and `file_read_tool` to verify information and ensure accuracy.
+
 
 Tasks
-* Policy Analysis: Analyzes the designated policy area, providing a comprehensive evaluation of the policy.
-* Stakeholder Analysis: Conducts an analysis of stakeholders related to the policy area.
-* Policy Recommendation: Develops clear, targeted, and feasible policy recommendations.
-* Legislative Briefing: Prepares a briefing suitable for policymakers, summarizing key findings and recommendations.
-* Implementation Plan: Outlines steps for the adoption, execution, and evaluation of policies.
 
-Development
+The Civic Agentcy framework is designed to automate and streamline various tasks related to public policy analysis and development. These tasks are crucial for comprehensive policy formulation, refinement, and implementation planning.
+
+* **Research Policy Issues**: Investigates the current status, debates, and evidence related to a specified policy topic, focusing on specific research questions. This task collects and analyzes relevant data and insights to provide a robust evidence base for policy brief formulation.
+* **Decision Making and Legislation**: Evaluates how external factors affect the legislative process and decision-making for a policy topic. It examines the policy's main legislative challenges and opportunities, suggesting strategies for navigating the legislative landscape.
+* **Analyze Policy Options**: Based on the research conducted, analyzes potential policy options for a policy topic. This task evaluates the pros and cons of each option, considering effectiveness, feasibility, and potential impact.
+* **Draft Policy Brief**: Drafts a policy brief for a policy topic using the research findings and policy recommendations. The brief includes an executive summary, context analysis, and evidence-based recommendations, aiming to be concise, engaging, and persuasive.
+* **Review and Refine Policy Brief**: Reviews the draft policy brief, ensuring the document is coherent, concise, and effectively communicates the policy analysis and recommendations. This task involves refining the brief to enhance persuasiveness and impact, incorporating feedback for final revisions.
 
 This project utilizes the crewai package to define agents and tasks that automate the analysis and reporting process. Language models from langchain_community and langchain_openai are used to process and analyze text, while SearchTools and BrowserTools enable web scraping for up-to-date information.
 
