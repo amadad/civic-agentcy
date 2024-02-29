@@ -4,7 +4,7 @@
 
 **Civic Agentcy** is a comprehensive framework designed to automate the process of analyzing public policies, engaging stakeholders, preparing legislative briefings, developing policy recommendations, and compiling detailed reports. Utilizing a combination of advanced language models and web scraping tools, this project aims to provide in-depth insights that guide policy formulation, refinement, and implementation planning.
 
-**Civic Agentcy** is a sophisticated framework designed for public policy analysis and development, characterized by:
+**Civic Agentcy** is a sophisticated framework designed for public policy analysis and development. 
 
 * **Automated Policy Analysis**: Utilizes advanced language models to analyze and evaluate policies.
 * **Stakeholder Engagement**: Streamlines the process of identifying and engaging key stakeholders.
@@ -12,7 +12,16 @@
 * **Policy Recommendations**: Generates actionable, evidence-based recommendations.
 * **Report Compilation**: Compiles in-depth reports, enhancing policy formulation and implementation.
 
-This framework empowers policymakers with data-driven insights, optimizing the public policy lifecycle.
+# User Input
+
+Through a streamlit app, users can input the following information:
+
+1. **What is the policy area of interest?** (E.g., Solar energy policy in Michigan)
+2. **What specific research questions should the policy analysis address?** (E.g., What are the current barriers to solar energy adoption?)
+3. **Provide a summary of your policy recommendations.** (E.g., Incentives for solar installation, streamlined permitting process)
+4. **What external factors should be considered in the policy analysis?** (E.g., Federal energy policies, technological advancements in solar panels)
+
+There are three main components to the this project: agents, tasks, and tools. The agents are designed to interact with the user and provide insights and recommendations based on the policy area of interest. The tasks are designed to automate the process of analyzing and evaluating policies, while the tools are used to gather and summarize information from various sources.
 
 ## Custom Agents
 
@@ -31,6 +40,16 @@ The Civic Agentcy framework is designed to automate and streamline various tasks
 * **Analyze Policy Options**: Based on the research conducted, analyzes potential policy options for a policy topic. This task evaluates the pros and cons of each option, considering effectiveness, feasibility, and potential impact.
 * **Draft Policy Brief**: Drafts a policy brief for a policy topic using the research findings and policy recommendations. The brief includes an executive summary, context analysis, and evidence-based recommendations, aiming to be concise, engaging, and persuasive.
 * **Review and Refine Policy Brief**: Reviews the draft policy brief, ensuring the document is coherent, concise, and effectively communicates the policy analysis and recommendations. This task involves refining the brief to enhance persuasiveness and impact, incorporating feedback for final revisions.
+
+## Tools
+
+Current tools include:
+
+- **SerpeApi**: Leverages `serpapi` for in-depth searches across the web, targeting specific policy areas.
+- **Perplexity Search Tool**: Applies `perplexity_search` for advanced, context-aware searches to uncover nuanced policy insights.
+- **You Search Tool**: Uses `you_search` for targeted information retrieval, honing in on specific policy-related queries.
+- **Exa Search Tool**: Employs `exa_search` for comprehensive searches, focusing on detailed information within policy sectors.
+- **File Tools**: Accesses and reads policy brief documents via the `file_read_tool`, facilitating direct analysis of policy texts.
 
 This project utilizes the [CrewAI](https://www.crewai.io) powered by [LangChain](https://www.langchain.com) to define agents and tasks that automate the analysis and reporting process. 
 
