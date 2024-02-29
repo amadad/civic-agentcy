@@ -34,7 +34,7 @@ The Civic Agentcy framework is designed to automate and streamline various tasks
 
 This project utilizes the [CrewAI](https://www.crewai.io) powered by [LangChain](https://www.langchain.com) to define agents and tasks that automate the analysis and reporting process. 
 
-# Roadmap
+## Roadmap
 
 - [x] Integrate [Exa Search](http://exa.ai) for enhanced realtime search capabilities
 - [x] Embeddings and vector search for improved policy analysis
@@ -45,9 +45,9 @@ This project utilizes the [CrewAI](https://www.crewai.io) powered by [LangChain]
 
 --
 
-# Contributing
+## Contributing
 
-Contributions to the **Civic Agentcy** are welcome. Please ensure to follow the project's code standards and submit pull requests for review.
+Contributions to the **Civic Agentcy** are welcome. Please ensure to follow the project's code standards and submit pull requests for review. Contact [Ali Madad](mailto:ali@scty.org) for any questions or issues.
 
 ## License
 
