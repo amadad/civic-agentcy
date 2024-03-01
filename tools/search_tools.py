@@ -2,7 +2,10 @@ import json
 import os
 import requests
 from openai import OpenAI
+from langchain_openai import ChatOpenAI
+from langchain.chains.summarize import load_summarize_chain
 from crewai_tools import tool
+from datetime import datetime, timedelta
 from langchain.chains.summarize import load_summarize_chain
 
 """
@@ -11,6 +14,8 @@ List of tools available in the search_tools module:
 - search_internet: Searches the internet using SerpApi.
 - perplexity_search: Searches the internet using Perplexity.
 - you_search: Searches the internet using You Search.
+- you_llm_search: Searches the internet using You Search with LLM.
+- you_news_search: Searches the internet using You Search with News.
 - exa_search: Searches the internet using Exa.
 - exa_find_similar: Finds similar links to a given URL using Exa.
 - exa_get_content: Retrieves the contents of documents using Exa.
@@ -61,9 +66,7 @@ def search_internet(query: str) -> str:
 @tool("Perplexity Search Tool")
 def perplexity_search(user_query: str) -> str:
     """
-    This tool uses the OpenAI API to fetch information on a specific topic.
-    It's designed to provide AI-generated responses based on the given query,
-    leveraging the Perplexity API for in-depth analysis and insights. 
+    Provides detailed AI-generated answers and insights from the Perplexity API.
     """
     api_key = os.getenv("PERPLEXITY_API_KEY")    
     client = OpenAI(api_key=api_key, base_url="https://api.perplexity.ai")
@@ -92,17 +95,10 @@ def perplexity_search(user_query: str) -> str:
     except Exception as e:
         return f"An error occurred: {str(e)}"
     
-@tool("AI Snippets Search")
+@tool("You Search AI Snippets")
 def you_search(query: str) -> list:
     """
-    Fetches AI-generated snippets based on the given query from the YDC Index API,
-    parses the JSON response, and returns the relevant parts of the search results.
-
-    Args:
-        query (str): The search query to fetch snippets for.
-
-    Returns:
-        list: A list of dictionaries, each containing the title, description, and URL of a search result.
+    Searches and returns AI-generated information for a query using the YDC Index API. 
     """
     you_api_key = os.getenv('YOU_API_KEY')
     headers = {"X-API-Key": you_api_key}
@@ -134,17 +130,40 @@ def you_search(query: str) -> list:
         return parsed_results
     except requests.RequestException as e:
         return [{"error": str(e)}]
-    
+
+@tool("You Search Web RAG Snippets")
+def you_llm_search(query: str) -> str:
+    """
+    Searches and returns the raw AI-generated information for a query using the YDC Index RAG API as a text string.
+    """
+    you_api_key = os.getenv('YOU_API_LLM_KEY')
+    headers = {"X-API-Key": you_api_key}
+    params = {"query": query, "num_web_results": "10"}
+
+    url = "https://api.ydc-index.io/rag"
+    response = requests.get(url, headers=headers, params=params)
+    response.raise_for_status()  # Raises an error for bad responses
+
+    return response.text
+
+@tool("You Search News")
+def you_news_search(query: str) -> str:
+    """
+    Searches and returns the raw AI-generated news articles for a query using the YDC Index News API as a text string.
+    """
+    you_api_key = os.getenv('YOU_API_KEY')  # Ensure you have set this environment variable correctly
+    headers = {"X-API-Key": you_api_key}
+    querystring = {"q": query}  # Define the query string with the search query
+
+    url = "https://api.ydc-index.io/news"
+    response = requests.request("GET", url, headers=headers, params=querystring)
+    response.raise_for_status()  # This will raise an HTTPError if the response is an error status code
+    return response.text
+
 @tool("Retrieve contents of documents based on a list of document IDs.")
 def exa_get_content(doc_ids: str) -> str:
     """
     Retrieves the contents of documents from the Exa API based on a list of document IDs.
-    
-    Args:
-        doc_ids (str): A comma-separated list of document IDs to retrieve contents for.
-    
-    Returns:
-        str: The JSON response from the Exa API containing the documents' contents.
     """
     url = "https://api.exa.ai/contents"
     payload = {"ids": doc_ids.split(",")}
@@ -156,61 +175,60 @@ def exa_get_content(doc_ids: str) -> str:
     response = requests.post(url, json=payload, headers=headers)
     return response.text
 
-@tool("Perform a search with an Exa prompt-engineered query.")
-def exa_search(query: str, use_autoprompt: bool = True, include_domains: str = "", exclude_domains: str = "", start_published_date: str = "", end_published_date: str = "") -> str:
+@tool("Perform a search with an Exa prompt-engineered query and summarize results.")
+def exa_search(query: str) -> list:
     """
-    Performs a search with the Exa API using a prompt-engineered query and retrieves relevant results.
-    
-    Args:
-        query (str): The search query.
-        use_autoprompt (bool): Whether to use autoprompt for the search.
-        include_domains (str): Comma-separated domains to include.
-        exclude_domains (str): Comma-separated domains to exclude.
-        start_published_date (str): Start date for when the document was published (YYYY-MM-DD format).
-        end_published_date (str): End date for when the document was published (YYYY-MM-DD format).
-    
-    Returns:
-        str: The JSON response from the Exa API with search results.
+    Performs a search with the Exa API using a prompt-engineered query, retrieves relevant results,
+    and summarizes each result using an LLM.
     """
+    # Setup for search query
+    start_published_date = (datetime.now() + timedelta(days=6*30)).strftime('%Y-%m-%d')
     url = "https://api.exa.ai/search"
     payload = {
         "query": query,
-        "useAutoprompt": use_autoprompt,
-        "includeDomains": include_domains.split(",") if include_domains else [],
-        "excludeDomains": exclude_domains.split(",") if exclude_domains else [],
+        "useAutoprompt": False,
+        "num_results": 5,  # Adjust the number of results as needed
         "startPublishedDate": start_published_date,
-        "endPublishedDate": end_published_date
     }
     headers = {
         "accept": "application/json",
         "content-type": "application/json",
         "x-api-key": os.getenv("EXA_API_KEY")
     }
+
+    # Perform search
     response = requests.post(url, json=payload, headers=headers)
-    return response.text
+    if response.status_code == 200:
+        search_results = response.json().get('results', [])
+
+        # Initialize summarization results list
+        summarized_results = []
+
+        # Process and summarize each search result
+        for result_item in search_results:
+            # Replace the following lines with your actual summarization logic
+            llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo-0125")
+            chain = load_summarize_chain(llm, chain_type="stuff")  # Adjust 'chain_type' as necessary
+            summarized_text = chain.run(result_item['text'])  # Assuming 'text' field exists and is relevant
+
+            summarized_results.append({
+                'original_text': result_item['text'],
+                'summarized_text': summarized_text
+            })
+
+        return summarized_results
+    else:
+        return [{"error": "Failed to fetch search results"}]
 
 @tool("Find similar links to the provided URL.")
-def exa_find_similar(url: str, include_domains: str = "", exclude_domains: str = "", start_published_date: str = "", end_published_date: str = "") -> str:
+def exa_find_similar(url: str) -> str:
     """
-    Finds similar links to the provided URL using the Exa API, optionally filtering by domain and publication date.
-    
-    Args:
-        url (str): The base URL to find similar links with.
-        include_domains (str): Comma-separated domains to include.
-        exclude_domains (str): Comma-separated domains to exclude.
-        start_published_date (str): Start date for when the document was published (YYYY-MM-DD format).
-        end_published_date (str): End date for when the document was published (YYYY-MM-DD format).
-    
-    Returns:
-        str: The JSON response from the Exa API with similar links.
+    Finds similar links to the provided URL using the Exa API.
     """
     api_url = "https://api.exa.ai/findSimilar"
     payload = {
-        "url": url,
-        "includeDomains": include_domains.split(",") if include_domains else [],
-        "excludeDomains": exclude_domains.split(",") if exclude_domains else [],
-        "startPublishedDate": start_published_date,
-        "endPublishedDate": end_published_date
+        "url": url
+        # Removed any date-related filtering from the payload
     }
     headers = {
         "accept": "application/json",
