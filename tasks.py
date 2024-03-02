@@ -81,5 +81,5 @@ class PolicyTasks:
                 A polished, final version of the policy brief that is clear, compelling, and aligned with advocacy goals. 
                 Feedback on improvements and final approval for dissemination. Formatted in markdown."""),
             agent=agent,
-            output_file="policy_brief.md"
+            output_file="output/policy_brief.md"
         )
