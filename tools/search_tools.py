@@ -7,6 +7,7 @@ from langchain.chains.summarize import load_summarize_chain
 from crewai_tools import tool
 from datetime import datetime, timedelta
 from langchain.chains.summarize import load_summarize_chain
+from langchain_community.tools.tavily_search import TavilySearchResults
 
 """
 List of tools available in the search_tools module:
@@ -21,7 +22,9 @@ List of tools available in the search_tools module:
 - exa_get_content: Retrieves the contents of documents using Exa.
 """
 
-@tool("Basic Search Internet")
+tavily_search = TavilySearchResults(api_key=os.getenv("TAVILY_API_KEY"))
+
+@tool("Search Internet with Serper")
 def basic_search(query: str, n_results: int = 5) -> str:
     """
     Searches the internet with Serper about a given topic and returns relevant results.
@@ -94,71 +97,6 @@ def perplexity_search(user_query: str) -> str:
         return response.choices[0].message.content
     except Exception as e:
         return f"An error occurred: {str(e)}"
-    
-@tool("You Search AI Snippets")
-def you_search(query: str) -> list:
-    """
-    Searches and returns AI-generated information for a query using the YDC Index API. 
-    """
-    you_api_key = os.getenv('YOU_API_KEY')
-    headers = {"X-API-Key": you_api_key}
-    try:
-        response = requests.get(
-            f"https://api.ydc-index.io/news",
-            params={"q": query},
-            headers=headers,
-        )
-        response.raise_for_status()  # Raises an error for bad responses
-        json_response = response.json()
-
-        # Parsing the JSON response
-        results = json_response.get('news', {}).get('results', [])
-        parsed_results = []
-
-        for result in results:
-            title = result.get('title')
-            description = result.get('description')
-            url = result.get('url')
-
-            if title and description and url:
-                parsed_results.append({
-                    'title': title,
-                    'description': description,
-                    'url': url
-                })
-
-        return parsed_results
-    except requests.RequestException as e:
-        return [{"error": str(e)}]
-
-@tool("You Search Web RAG Snippets")
-def you_llm_search(query: str) -> str:
-    """
-    Searches and returns the raw AI-generated information for a query using the YDC Index RAG API as a text string.
-    """
-    you_api_key = os.getenv('YOU_API_LLM_KEY')
-    headers = {"X-API-Key": you_api_key}
-    params = {"query": query, "num_web_results": "10"}
-
-    url = "https://api.ydc-index.io/rag"
-    response = requests.get(url, headers=headers, params=params)
-    response.raise_for_status()  # Raises an error for bad responses
-
-    return response.text
-
-@tool("You Search News")
-def you_news_search(query: str) -> str:
-    """
-    Searches and returns the raw AI-generated news articles for a query using the YDC Index News API as a text string.
-    """
-    you_api_key = os.getenv('YOU_API_KEY')  # Ensure you have set this environment variable correctly
-    headers = {"X-API-Key": you_api_key}
-    querystring = {"q": query}  # Define the query string with the search query
-
-    url = "https://api.ydc-index.io/news"
-    response = requests.request("GET", url, headers=headers, params=querystring)
-    response.raise_for_status()  # This will raise an HTTPError if the response is an error status code
-    return response.text
 
 @tool("Retrieve contents of documents based on a list of document IDs.")
 def exa_get_content(doc_ids: str) -> str:
@@ -237,3 +175,15 @@ def exa_find_similar(url: str) -> str:
     }
     response = requests.post(api_url, json=payload, headers=headers)
     return response.text
+
+@tool("Tavily Comprehensive Search Tool")
+def tavily_search_tool(query: str) -> str:
+    """
+    Performs a search using the Tavily API and returns a comprehensive summary of results.
+    - query: The search query string.
+    
+    This tool encapsulates the functionality to query the Tavily search engine, tailored for AI agent use.
+    """
+    results = tavily_search.invoke({"query": query})
+    summaries = [f"URL: {result['url']}\nContent: {result['content'][:150]}..." for result in results]
+    return "\n\n".join(summaries)
