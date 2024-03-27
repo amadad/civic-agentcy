@@ -1,42 +1,87 @@
+import os
+import streamlit as st
 from crewai import Agent
-from crewai_tools.tools import WebsiteSearchTool, SeperDevTool, FileReadTool
 from tools.search_tools import basic_search
 from langchain_openai import ChatOpenAI
 
-web_search_tool = WebsiteSearchTool()
-seper_dev_tool = SeperDevTool()
-file_read_tool = FileReadTool(
-    file_path='policy_brief_example.md',
-    description='A tool to read the policy brief example file.'
-)
+# Initialize the language model with the correct API parameters
+llm = ChatOpenAI(openai_api_base="https://api.groq.com/openai/v1",
+                 openai_api_key=os.getenv("GROQ_API_KEY"),
+                 model_name="mixtral-8x7b-32768")
+
+
+def streamlit_callback(step_output):
+  """Callback function to display step output in Streamlit."""
+  st.markdown("---")
+  for step in step_output:
+    if isinstance(step, tuple) and len(step) == 2:
+      action, observation = step
+      if isinstance(
+          action, dict
+      ) and "tool" in action and "tool_input" in action and "log" in action:
+        st.markdown(f"# Action")
+        st.markdown(f"**Tool:** {action['tool']}")
+        st.markdown(f"**Tool Input:** {action['tool_input']}")
+        st.markdown(f"**Log:** {action['log']}")
+        if 'Action' in action:  # Check if 'Action' key exists before using it
+          st.markdown(f"**Action:** {action['Action']}")
+        st.markdown(f"**Action Input:** ```json\n{action['tool_input']}\n```")
+      elif isinstance(action, str):
+        st.markdown(f"**Action:** {action}")
+      else:
+        st.markdown(f"**Action:** {str(action)}")
+
+      st.markdown(f"**Observation**")
+      if isinstance(observation, str):
+        observation_lines = observation.split('\n')
+        for line in observation_lines:
+          st.markdown(line)
+      else:
+        st.markdown(str(observation))
+    else:
+      st.markdown(step)
+
 
 class PolicyAgents():
-    def research_agent(self):
-        return Agent(
-            role='Policy Researcher',
-            goal='Investigate current policy issues, trends, and evidence through comprehensive web and database searches to gather relevant data and insights.',
-            tools=[basic_search],
-            backstory='An expert in navigating complex policy landscapes to extract critical data and insights from a multitude of sources.',
-            verbose=True,
-            llm=ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo-0125")
-        )
 
-    def writer_agent(self):
-        return Agent(
-            role='Policy Writer',
-            goal='Use insights from the Policy Researcher to create a detailed, engaging, and impactful policy brief.',
-            tools=[basic_search, file_read_tool],
-            backstory='Skilled in crafting impactful policy briefs that articulate insights, key trends, and evidence-based recommendations.',
-            verbose=True,
-            llm=ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo-0125")
-        )
+  def research_agent(self):
+    return Agent(
+        role='Policy Researcher',
+        goal=
+        'Investigate current policy issues, trends, and evidence through comprehensive web and database searches to gather relevant data and insights.',
+        tools=[basic_search],
+        backstory=
+        'An expert in navigating complex policy landscapes to extract critical data and insights from a multitude of sources.',
+        verbose=True,
+        llm=llm,
+        step_callback=streamlit_callback,
+        max_iterations=3,
+    )
 
-    def review_agent(self):
-        return Agent(
-            role='Policy Brief Reviewer',
-            goal='Critically review the draft policy brief for coherence, alignment with policy objectives, evidence strength, and persuasive clarity. Refine content to ensure high-quality, impactful communication.',
-            tools=[basic_search, file_read_tool],
-            backstory='A meticulous reviewer with a keen understanding of policy advocacy, ensuring each brief is clear, compelling, and grounded in solid evidence.',
-            verbose=True,
-            llm=ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo-0125")
-        )
+  def writer_agent(self):
+    return Agent(
+        role='Policy Writer',
+        goal=
+        'Use insights from the Policy Researcher to create a detailed, engaging, and impactful policy brief.',
+        tools=[basic_search],
+        backstory=
+        'Skilled in crafting impactful policy briefs that articulate insights, key trends, and evidence-based recommendations.',
+        verbose=True,
+        llm=llm,
+        step_callback=streamlit_callback,
+        max_iterations=3,
+    )
+
+  def review_agent(self):
+    return Agent(
+        role='Policy Brief Reviewer',
+        goal=
+        'Critically review the draft policy brief for coherence, alignment with policy objectives, evidence strength, and persuasive clarity. Refine content to ensure high-quality, impactful communication.',
+        tools=[basic_search],
+        backstory=
+        'A meticulous reviewer with a keen understanding of policy advocacy, ensuring each brief is clear, compelling, and grounded in solid evidence.',
+        verbose=True,
+        llm=llm,
+        step_callback=streamlit_callback,
+        max_iterations=3,
+    )

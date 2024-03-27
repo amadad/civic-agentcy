@@ -1,77 +1,62 @@
-import os
 import streamlit as st
-from dotenv import load_dotenv
 from crewai import Crew
 from tasks import PolicyTasks
 from agents import PolicyAgents
 
-load_dotenv()
+def icon(emoji: str):
+    """Shows an emoji as a Notion-style page icon."""
+    st.write(f'<span style="font-size: 78px; line-height: 1">{emoji}</span>', unsafe_allow_html=True)
 
-policy_tasks = PolicyTasks()
-policy_agents = PolicyAgents()
+class PolicyCrew:
+    def __init__(self, policy_topic, research_questions, recommendations_summary):
+        self.policy_topic = policy_topic
+        self.research_questions = research_questions
+        self.recommendations_summary = recommendations_summary
+        self.output_placeholder = st.empty()
 
-st.set_page_config(page_title="Civic Agentcy", page_icon="🗳️")
-st.title('Civic Agentcy')
-st.markdown("##### 🗳️ topical and timely intelligence on public policy")
+    def run(self):
+        agents = PolicyAgents()
+        tasks = PolicyTasks()
 
-policy_topic = st.text_input(
-    "What is the policy area of interest?",
-    placeholder="E.g., Solar energy policy in Michigan")
-research_questions = st.text_input(
-    "What specific research questions should the policy analysis address?",
-    placeholder="E.g., What are the current barriers to solar energy adoption?"
-)
-recommendations_summary = st.text_input(
-    "Provide a summary of your policy recommendations.",
-    placeholder=
-    "E.g., Incentives for solar installation, streamlined permitting process")
-external_factors = st.text_input(
-    "What external factors should be considered in the policy analysis?",
-    placeholder=
-    "E.g., Federal energy policies, technological advancements in solar panels"
-)
+        researcher_agent = agents.research_agent()
+        writer_agent = agents.writer_agent()
+        review_agent = agents.review_agent()
 
-# Create Agents
-researcher_agent = policy_agents.research_agent()
-writer_agent = policy_agents.writer_agent()
-review_agent = policy_agents.review_agent()
+        research_policy_task = tasks.research_policy(researcher_agent, self.policy_topic, self.research_questions)
+        analyze_policy_options_task = tasks.analyze_policy(researcher_agent, self.policy_topic)
+        draft_policy_brief_task = tasks.draft_brief(writer_agent, self.policy_topic, self.recommendations_summary)
+        review_and_refine_policy_brief_task = tasks.review_brief(review_agent, self.policy_topic)
 
-# Define Tasks for each agent
-research_policy_task = policy_tasks.research_policy_issues_task(
-    researcher_agent, policy_topic, research_questions)
-legislation_policy_task = policy_tasks.decision_making_and_legislation_task(
-    researcher_agent, research_questions, policy_topic)
-analyze_policy_options_task = policy_tasks.analyze_policy_options_task(
-    researcher_agent, policy_topic)
-draft_policy_brief_task = policy_tasks.draft_policy_brief_task(
-    writer_agent, policy_topic, recommendations_summary)
-review_and_refine_policy_brief_task = policy_tasks.review_and_refine_policy_brief_task(
-    review_agent, policy_topic)
+        crew = Crew(agents=[researcher_agent, writer_agent, review_agent],
+                    tasks=[research_policy_task, analyze_policy_options_task, draft_policy_brief_task, review_and_refine_policy_brief_task],
+                    verbose=True)
+        result = crew.kickoff()
+        self.output_placeholder.markdown(result)
+        return result
 
-if 'result' not in st.session_state:
-  st.session_state.result = None
+if __name__ == "__main__":
+    icon("⚖️ Policy Research")
+    st.subheader("Exploring and Shaping Public Policy Initiatives", divider="rainbow", anchor=False)
 
-if st.button('Start Research'):
-  if st.session_state.result is None:
-      # Your existing logic for generating the policy brief
-      # This should only run if there's no result in the session state
-      crew = Crew(agents=[researcher_agent, writer_agent, review_agent],
-                  tasks=[research_policy_task, legislation_policy_task,
-                         analyze_policy_options_task, draft_policy_brief_task,
-                         review_and_refine_policy_brief_task])
+    with st.sidebar:
+        st.header("📜 Enter Policy Details")
+        with st.form("policy_form"):
+            policy_topic = st.text_input("Policy area of interest:", placeholder="E.g., Solar energy policy in Michigan")
+            research_questions = st.text_input("Specific research questions:", placeholder="E.g., What are the current barriers to solar energy adoption?")
+            recommendations_summary = st.text_input("Summary of policy recommendations:", placeholder="E.g., Incentives for solar installation, streamlined permitting process")
+            submitted = st.form_submit_button(label='Start Research')
+        st.divider()
 
-      st.session_state.result = crew.kickoff()
+    st.sidebar.markdown("""
+        Source code on [**Github**](https://github.com/amadad/civic-agentcy)<br>
+        Created by [**@amadad**](https://twitter.com/amadad)
+        """, unsafe_allow_html=True)
 
-  st.markdown(st.session_state.result)
-  st.download_button(label="Download",
-                     data=st.session_state.result,
-                     file_name="policy_brief.md",
-                     mime="text/plain")
-else:
-  # Optionally, display the result if it's already generated without needing to press the button again
-  if st.session_state.result is not None:
-      st.markdown(st.session_state.result)
-      st.download_button(label="Download",
-                         data=st.session_state.result,
-                         file_name="policy_brief.md",
-                         mime="text/plain")
+    if submitted:
+        with st.status("🌐 **Policy Analysis in Progress...**", state="running", expanded=True) as status:
+            with st.container(height=500, border=False):
+                policy_crew = PolicyCrew(policy_topic, research_questions, recommendations_summary)
+                result = policy_crew.run()
+            status.update(label="✅ Policy Analysis Ready!", state="complete", expanded=False)
+        st.subheader("Here is your Policy Brief", anchor=False, divider="rainbow")
+        st.markdown(result)
