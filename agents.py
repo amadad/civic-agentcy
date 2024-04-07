@@ -1,13 +1,9 @@
 import os
 import streamlit as st
 from crewai import Agent
-from tools.search_tools import basic_search
-from langchain_openai import ChatOpenAI
-
-# Initialize the language model with the correct API parameters
-llm = ChatOpenAI(openai_api_base="https://api.groq.com/openai/v1",
-                 openai_api_key=os.getenv("GROQ_API_KEY"),
-                 model_name="mixtral-8x7b-32768")
+from tools.search_tools import tavily_search_tool, basic_search
+from langchain_groq import ChatGroq
+from langchain_anthropic import ChatAnthropic
 
 
 def streamlit_callback(step_output):
@@ -44,18 +40,27 @@ def streamlit_callback(step_output):
 
 class PolicyAgents():
 
+  def __init__(self):
+    #self.llm = ChatGroq(api_key=os.getenv("GROQ_API_KEY"),
+    #                    model="mixtral-8x7b-32768")
+
+    anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
+    self.llm = ChatAnthropic(anthropic_api_key=anthropic_api_key,
+                             model_name="claude-3-haiku-20240307")
+
   def research_agent(self):
     return Agent(
         role='Policy Researcher',
         goal=
         'Investigate current policy issues, trends, and evidence through comprehensive web and database searches to gather relevant data and insights.',
-        tools=[basic_search],
+        tools=[tavily_search_tool],
         backstory=
         'An expert in navigating complex policy landscapes to extract critical data and insights from a multitude of sources.',
         verbose=True,
-        llm=llm,
+        llm=self.llm,
         step_callback=streamlit_callback,
-        max_iterations=3,
+        allow_delegation=False,
+        max_iter=3,
     )
 
   def writer_agent(self):
@@ -67,9 +72,10 @@ class PolicyAgents():
         backstory=
         'Skilled in crafting impactful policy briefs that articulate insights, key trends, and evidence-based recommendations.',
         verbose=True,
-        llm=llm,
+        llm=self.llm,
+        allow_delegation=False,
         step_callback=streamlit_callback,
-        max_iterations=3,
+        max_iter=3,
     )
 
   def review_agent(self):
@@ -81,7 +87,8 @@ class PolicyAgents():
         backstory=
         'A meticulous reviewer with a keen understanding of policy advocacy, ensuring each brief is clear, compelling, and grounded in solid evidence.',
         verbose=True,
-        llm=llm,
+        llm=self.llm,
+        allow_delegation=False,
         step_callback=streamlit_callback,
-        max_iterations=3,
+        max_iter=3,
     )

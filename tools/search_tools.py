@@ -7,7 +7,7 @@ from langchain.chains.summarize import load_summarize_chain
 from crewai_tools import tool
 from datetime import datetime, timedelta
 from langchain.chains.summarize import load_summarize_chain
-#from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_community.tools.tavily_search import TavilySearchResults
 """
 List of tools available in the search_tools module:
 - basic_search: Performs a basic search using Serper.
@@ -20,30 +20,31 @@ List of tools available in the search_tools module:
 - exa_find_similar: Finds similar links to a given URL using Exa.
 - exa_get_content: Retrieves the contents of documents using Exa.
 """
+tavily_search = TavilySearchResults(api_key=os.getenv("TAVILY_API_KEY"))
 
-#tavily_search = TavilySearchResults(api_key=os.getenv("TAVILY_API_KEY"))
 
 @tool("Search Internet with Serper")
 def basic_search(query: str, n_results: int = 5) -> str:
-    """
+  """
     Searches the internet with Serper about a given topic and returns relevant results.
     """
-    serper_api_key = os.getenv('SERPER_API_KEY')
-    if not serper_api_key:
-        raise ValueError("SERPER_API_KEY environment variable not set")
+  serper_api_key = os.getenv('SERPER_API_KEY')
+  if not serper_api_key:
+    raise ValueError("SERPER_API_KEY environment variable not set")
 
-    url = "https://google.serper.dev/search"
-    payload = json.dumps({"q": query})
-    headers = {
-        'X-API-KEY': serper_api_key,
-        'content-type': 'application/json'
-    }
-    response = requests.post(url, headers=headers, data=payload)
-    results = response.json()['organic']
-    string = [f"Title: {result['title']}\nLink: {result['link']}\nSnippet: {result['snippet']}\n-----------------" for result in results[:n_results] if 'title' in result and 'link' in result and 'snippet' in result]
+  url = "https://google.serper.dev/search"
+  payload = json.dumps({"q": query})
+  headers = {'X-API-KEY': serper_api_key, 'content-type': 'application/json'}
+  response = requests.post(url, headers=headers, data=payload)
+  results = response.json()['organic']
+  string = [
+      f"Title: {result['title']}\nLink: {result['link']}\nSnippet: {result['snippet']}\n-----------------"
+      for result in results[:n_results]
+      if 'title' in result and 'link' in result and 'snippet' in result
+  ]
 
-    content = '\n'.join(string)
-    return f"\nSearch result: {content}\n"
+  content = '\n'.join(string)
+  return f"\nSearch result: {content}\n"
 
 
 @tool("Search Internet with Serpapi")
