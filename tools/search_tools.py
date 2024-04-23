@@ -4,7 +4,7 @@ import requests
 from openai import OpenAI
 from langchain_openai import ChatOpenAI
 from langchain.chains.summarize import load_summarize_chain
-from crewai_tools import tool
+from crewai_tools import tool, BaseTool
 from datetime import datetime, timedelta
 from langchain.chains.summarize import load_summarize_chain
 from langchain_community.tools.tavily_search import TavilySearchResults
@@ -21,6 +21,47 @@ List of tools available in the search_tools module:
 - exa_get_content: Retrieves the contents of documents using Exa.
 """
 tavily_search = TavilySearchResults(api_key=os.getenv("TAVILY_API_KEY"))
+
+
+class PerplexityAIChatTool(BaseTool):
+  name: str = "Perplexity AI Chat Tool"
+  description: str = "Interacts with Perplexity AI's chat model to get responses to user queries."
+
+  def _run(self, user_message: str) -> str:
+    """
+      Sends a message to the Perplexity AI chat model and returns the model's response.
+
+      Args:
+      user_message (str): The user's message/question to send to the chat model.
+
+      Returns:
+      str: The chat model's response.
+      """
+    url = "https://api.perplexity.ai/chat/completions"
+    payload = {
+        "model":
+        "sonar-small-chat",
+        "messages": [{
+            "role": "system",
+            "content": "Be precise and concise."
+        }, {
+            "role": "user",
+            "content": user_message
+        }]
+    }
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "authorization":
+        f"Bearer {os.getenv('PERPLEXITY_API_KEY')}"  # Use environment variable for API key
+    }
+
+    try:
+      response = requests.post(url, json=payload, headers=headers)
+      response.raise_for_status()  # Raises an HTTPError for bad responses
+      return response.text  # You might want to parse the JSON response and return a specific field
+    except requests.RequestException as e:
+      return f"Error: {str(e)}"
 
 
 @tool("Search Internet with Serper")

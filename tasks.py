@@ -24,12 +24,21 @@ class PolicyResearch(BaseModel):
       description=
       "Summary of key insights and divergent viewpoints identified through research"
   )
+  url_citation: List[str] = Field(
+      ...,
+      description=
+      "URLs linking to sources that provide additional information or evidence supporting the key findings"
+  )
 
 
 class PolicyTasks:
 
-  @staticmethod
-  def research_policy(agent, policy_topic: str, research_questions: List[str]):
+  def research_policy(self, agent, policy_topic: str,
+                      research_questions: List[str]):
+    if isinstance(research_questions, str):
+      research_questions = [research_questions]  # Encapsulate it in a list
+    research_questions = [str(q).strip() for q in research_questions]
+
     return Task(
         description=dedent(f"""
                 **Research Policy Issues**
@@ -45,13 +54,13 @@ class PolicyTasks:
                 **Evidence Base & Key Findings**: 
                 - Empirical evidence points.
                 - Critical insights from the research.
+                - URL citation
             """),
         agent=agent,
         output_pydantic=PolicyResearch,
     )
 
-  @staticmethod
-  def analyze_policy(agent, policy_topic):
+  def analyze_policy(self, agent, policy_topic):
     return Task(
         description=dedent(f"""
                 Based on the research conducted, analyze potential policy options for {policy_topic}. 
@@ -66,13 +75,14 @@ class PolicyTasks:
                   - **Policy Option 2**: Pros and Cons.
                 - **Recommendations**: 
                   - Bullet points of actionable recommendations with brief rationales.
+                - **Citation**: 
+                  - URL citation of source.
             """),
         agent=agent,
     )
 
-  @staticmethod
-  def draft_brief(agent, policy_topic, recommendations_summary):
-    output_path = "output/policy_brief_draft.md"
+  def draft_brief(self, agent, policy_topic, recommendations_summary):
+
     return Task(
         description=dedent(f"""
                 Draft a policy brief for {policy_topic} using the research findings and policy recommendations. 
@@ -85,46 +95,44 @@ class PolicyTasks:
                 **Executive Summary**: 
                   - Highlights key points, challenges, and recommendations related to {policy_topic}.
                   - **Citations**:
-                    - "Title of Source Article," Author, Publication Date, [URL](#)
+                    - ["Title of Source Article," Author, Publication Date](URL)
                 **Current Status**: 
                   - Information on the current legislative or policy status concerning {policy_topic}.
                   - **Citations**:
-                    - "Legislation on {policy_topic}," Government Department or Body, [URL](#)
+                    - ["Title of Source Article," Author, Publication Date](URL)
                 **Background and Context**: 
                   - An overview of the issue underlying {policy_topic}.
                   - **Citations**:
-                    - "Historical Context of {policy_topic}," Author, Publication, [URL](#)
+                    - ["Title of Source Article," Author, Publication Date](URL)
                 **Analysis of the Issue**: 
                 - A detailed examination of the main challenges related to {policy_topic}.
                 - **Citations**:
-                  - "Challenges Facing {policy_topic}," Expert Name, Think Tank or Research Institute, [URL](#)
+                    - ["Title of Source Article," Author, Publication Date](URL)
                 **Opportunities for Improvement**: 
                 - Outlines potential avenues for positive change within {policy_topic}.
                 - **Citations**:
-                  - "Innovations in {policy_topic}," Innovator or Researcher Name, Date, [URL](#)
+                    - ["Title of Source Article," Author, Publication Date](URL)
                 **Proposed Solutions and Recommendations**: 
                 - Lists detailed action plans or policy recommendations for {policy_topic}.
                 - **Citations**:
-                  - "Policy Solutions for {policy_topic}," Policy Analyst or Expert, Date, [URL](#)
+                    - ["Title of Source Article," Author, Publication Date](URL)
                 **Conclusion and Call to Action**: 
                 - A summary urging action on {policy_topic}.
                 - **Citations**:
-                  - "The Urgency of Action on {policy_topic}," Influential Figure or Organization, [URL](#)
+                    - ["Title of Source Article," Author, Publication Date](URL)
                 **Unanswered Questions and Likelihood of Passage**: 
                 - Insights into unresolved aspects and policy success chances.
                 - **Citations**:
-                  - "Forecasting Policy Outcomes for {policy_topic}," Forecaster Name, Publication Date, [URL](#)
+                    - ["Title of Source Article," Author, Publication Date](URL)
                 **Recent News or Events**: 
                 - The latest relevant developments related to {policy_topic}.
                 - **Citations**:
-                  - "Breaking News on {policy_topic}," News Source, Date, [URL](#)
+                    - ["Title of Source Article," Author, Publication Date](URL)
             """),
         agent=agent,
-        output_file=output_path,
     )
 
-  @staticmethod
-  def review_brief(agent, policy_topic):
+  def review_brief(self, agent, policy_topic):
     return Task(
         description=dedent(f"""
                 **Review and Refine Policy Brief on {policy_topic}**
@@ -144,39 +152,39 @@ class PolicyTasks:
                 **Executive Summary**: 
                   - Highlights key points, challenges, and recommendations related to {policy_topic}.
                   - **Citations**:
-                    - "Title of Source Article," Author, Publication Date, [URL](#)
+                    -[Title of Source Article, Author, Publication Date](URL)
                 **Current Status**: 
                   - Information on the current legislative or policy status concerning {policy_topic}.
                   - **Citations**:
-                    - "Legislation on {policy_topic}," Government Department or Body, [URL](#)
+                    -[Legislation on {policy_topic}, Government Department or Body](URL)
                 **Background and Context**: 
                   - An overview of the issue underlying {policy_topic}.
                   - **Citations**:
-                    - "Historical Context of {policy_topic}," Author, Publication, [URL](#)
+                    -[Historical Context of {policy_topic}, Author, Publication](URL)
                 **Analysis of the Issue**: 
                 - A detailed examination of the main challenges related to {policy_topic}.
                 - **Citations**:
-                  - "Challenges Facing {policy_topic}," Expert Name, Think Tank or Research Institute, [URL](#)
+                  -[Challenges Facing {policy_topic}, Expert Name, Think Tank or Research Institute](URL)
                 **Opportunities for Improvement**: 
                 - Outlines potential avenues for positive change within {policy_topic}.
                 - **Citations**:
-                  - "Innovations in {policy_topic}," Innovator or Researcher Name, Date, [URL](#)
+                  -[Innovations in {policy_topic}, Innovator or Researcher Name, Date](URL)
                 **Proposed Solutions and Recommendations**: 
                 - Lists detailed action plans or policy recommendations for {policy_topic}.
                 - **Citations**:
-                  - "Policy Solutions for {policy_topic}," Policy Analyst or Expert, Date, [URL](#)
+                  -[Policy Solutions for {policy_topic}, Policy Analyst or Expert, Date](URL)
                 **Conclusion and Call to Action**: 
                 - A summary urging action on {policy_topic}.
                 - **Citations**:
-                  - "The Urgency of Action on {policy_topic}," Influential Figure or Organization, [URL](#)
+                  -[The Urgency of Action on {policy_topic}, Influential Figure or Organization](URL)
                 **Unanswered Questions and Likelihood of Passage**: 
                 - Insights into unresolved aspects and policy success chances.
                 - **Citations**:
-                  - "Forecasting Policy Outcomes for {policy_topic}," Forecaster Name, Publication Date, [URL](#)
+                  -[Forecasting Policy Outcomes for {policy_topic}, Forecaster Name, Publication Date](URL)
                 **Recent News or Events**: 
                 - The latest relevant developments related to {policy_topic}.
                 - **Citations**:
-                  - "Breaking News on {policy_topic}," News Source, Date, [URL](#)
+                  -[Breaking News on {policy_topic}, News Source, Date](URL)
             """),
         agent=agent,
     )

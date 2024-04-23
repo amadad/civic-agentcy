@@ -3,10 +3,12 @@ from crewai import Crew
 from tasks import PolicyTasks
 from agents import PolicyAgents
 
+
 def icon(emoji: str):
   """Shows an emoji as a Notion-style page icon."""
   st.write(f'<span style="font-size: 78px; line-height: 1">{emoji}</span>',
            unsafe_allow_html=True)
+
 
 class PolicyCrew:
 
@@ -42,8 +44,7 @@ class PolicyCrew:
                     draft_policy_brief_task,
                     review_and_refine_policy_brief_task
                 ],
-                verbose=True,
-                memory=True)
+                verbose=False)
 
     result = crew.kickoff()
     self.output_placeholder.markdown(result)
