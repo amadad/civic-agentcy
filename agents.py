@@ -46,8 +46,8 @@ class PolicyAgents():
 
   def __init__(self):
     self.llm = ChatGroq(  #api_key=os.getenv("GROQ_API_KEY"),
-        model="llama3-8b-8192")
-
+        model="llama-3.1-70b-versatile")
+    #model="llama3-8b-8192")
     #anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
     #self.llm = ChatAnthropic(anthropic_api_key=anthropic_api_key,
     #                         model_name="claude-3-haiku-20240307")

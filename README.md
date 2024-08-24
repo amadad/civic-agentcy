@@ -1,4 +1,43 @@
+<div align="center">
+
+<img width="100px" src="./misc/logo.png" />
+
 # Civic Agentcy 🗳️
+
+### Public Policy Researcher & Analysis
+
+<p>
+<img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/amadad/civic-agentcy" />
+<img alt="GitHub Last Commit" src="https://img.shields.io/github/last-commit/amadad/civic-agentcy" />
+<img alt="GitHub Repo Size" src="https://img.shields.io/github/repo-size/amadad/civic-agentcy" />
+<img alt="GitHub Stars" src="https://img.shields.io/github/stars/amadad/civic-agentcy" />
+<img alt="GitHub Forks" src="https://img.shields.io/github/forks/amadad/civic-agentcy" />
+<img alt="Github License" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
+<img alt="Twitter" src="https://img.shields.io/twitter/follow/amadad?style=social" />
+</p>
+
+</div>
+
+-----
+
+<p align="center">
+  <a href="#-overview">Overview</a> •
+  <a href="#user-input">User Input</a> •
+  <a href="#-custom-agents">Custom Agents</a> •
+  <a href="#-task">Task</a> •
+  <a href="#-tools">Tools</a> •
+  <a href="#-roadmap">Roadmap</a> •
+  <a href="#-contributing">Contributing</a> •
+  <a href="#-license">License</a>
+</p>
+
+-----
+
+Public Policy Researcher & Analysis that uses [crewAI](https://www.crewai.io) powered by [LangChain](https://www.langchain.com) to define agents and tasks that automate the analysis and reporting process.
+
+-----
+
+## 📖 Overview
 
 The process of analyzing public policies, engaging stakeholders, and generating actionable insights is often complex and time-consuming, lacking efficiency and clarity. **Civic Agentcy** is a comprehensive framework designed to automate the process of analyzing public policies, engaging stakeholders, preparing legislative briefings, developing policy recommendations, and compiling detailed reports. Utilizing a combination of advanced language models and realtime retrieval tools, this project aims to provide in-depth insights that guide policy formulation, refinement, and implementation planning.
 
