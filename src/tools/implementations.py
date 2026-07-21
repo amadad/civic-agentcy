@@ -207,6 +207,11 @@ class CongressSearch(BaseTool):
         findings = []
         for bill in _as_mapping_list(data.get("bills"))[:_base.RESULTS_LIMIT]:
             latest_action = _as_mapping(bill.get("latestAction"))
+            date = _as_string(latest_action.get("actionDate")) or _as_string(
+                bill.get("introducedDate")
+            )
+            if since and date and date[:10] < since:
+                continue
             bill_id = f"{_as_string(bill.get('type'))}{_as_string(bill.get('number'))}"
             findings.append(
                 Finding(
@@ -216,8 +221,7 @@ class CongressSearch(BaseTool):
                         f"Status: {_as_string(latest_action.get('text'), 'N/A')}"
                     ),
                     url=_as_string(bill.get("url")),
-                    date=_as_string(latest_action.get("actionDate"))
-                    or _as_string(bill.get("introducedDate")),
+                    date=date,
                     source_type=self.SOURCE_TYPE,
                 )
             )

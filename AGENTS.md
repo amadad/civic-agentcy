@@ -10,12 +10,20 @@ research (available tools, parallel) → write → review → report.md
               research A ↘
               research B → (parallel, ≤4) → compare → report.md
 
-research (available tools, parallel) → signals envelope → stdout (JSON)
+direct source fan-out (available tools, parallel) → signals envelope → stdout (JSON)
+research (model-selected tools) → signals envelope → stdout (JSON)
 ```
 
-Signals mode reuses the normal research phase and skips only the writer/reviewer steps.
-Inputs are either a preset name from `topics.toml` or an ad-hoc `--topic` plus the usual `--scope`, `--compare`, `--questions`, `--limit`, `--since`, and `--verbose` flags.
-For Pulse, `pulse-policy-weekly` now runs with `scope = "policy"` so the feed favors concrete policy movement from Congress, Federal Register, Regulations.gov, courts, and state legislation.
+Signals mode has two explicit paths. `signals --direct` is the automation
+primitive: one parallel invocation of every available adapter in the selected
+scope, no Gemini, no report, and no repository writes. Signals mode without the
+flag retains model-selected research for interactive use. Inputs are a preset or
+an ad-hoc topic plus scope, limit, cutoff, and verbosity; compare remains on the
+model-selected path.
+
+Civic owns source transport and normalized policy signals. Workflow owners such
+as Hound own credentials at the capability boundary, durable state, approval,
+and canonical writes.
 
 ## 1. Researcher
 

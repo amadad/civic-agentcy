@@ -17,7 +17,14 @@ from dotenv import load_dotenv
 from rich.console import Console
 
 from _agent_cli import DoctorCheck, doctor_runner
-from agents import compare_research, research, review, write_brief, write_comparison
+from agents import (
+    compare_research,
+    direct_research,
+    research,
+    review,
+    write_brief,
+    write_comparison,
+)
 from output import format_json, save_report
 from output_signals import emit_signals
 from scopes import Scope, compare_target_scope, parse_compare, parse_scope, scope_label
@@ -25,7 +32,7 @@ from tools import ResearchOutput, ResearchResults, get_tool_names
 from tools.base import clear_cache, get_cache_stats, set_results_limit
 from tools.declarations import HARD_REQUIRED_TOOL_ENV_VARS
 
-__version__ = "0.6.0"
+__version__ = "0.6.1"
 
 _NO_COLOR = bool(os.environ.get("NO_COLOR")) or not sys.stdout.isatty()
 _FORCE_TERM = sys.stdout.isatty() and not os.environ.get("NO_COLOR")
@@ -101,8 +108,13 @@ def _requested_tool_names(scope: Scope, compare: list[str] | None = None) -> lis
     return names
 
 
-def check_env(scope: Scope, compare: list[str] | None = None) -> list[str]:
-    required = ["GOOGLE_API_KEY"]
+def check_env(
+    scope: Scope,
+    compare: list[str] | None = None,
+    *,
+    require_model: bool = True,
+) -> list[str]:
+    required = ["GOOGLE_API_KEY"] if require_model else []
     for tool_name in _requested_tool_names(scope, compare):
         env_name = HARD_REQUIRED_TOOL_ENV_VARS.get(tool_name)
         if env_name and env_name not in required:
@@ -395,7 +407,12 @@ def cmd_signals(args: argparse.Namespace) -> int:
         err_console.print(f"[red]Error:[/] {e}")
         return 1
 
-    missing = check_env(scope, compare_targets)
+    direct = bool(getattr(args, "direct", False))
+    if direct and compare_targets:
+        err_console.print("[red]Error:[/] --direct does not support compare mode")
+        return 1
+
+    missing = check_env(scope, compare_targets, require_model=not direct)
     if missing:
         _print_missing_env(missing)
         return 1
@@ -406,11 +423,32 @@ def cmd_signals(args: argparse.Namespace) -> int:
     since = getattr(args, "since", None)
 
     def _body() -> int:
-        if compare_targets:
-            outputs = compare_research(topic, compare_targets, questions, verbose=args.verbose, since=since)
+        if direct:
+            research_output = direct_research(
+                topic,
+                scope=scope,
+                verbose=args.verbose,
+                since=since,
+            )
+            label = research_output.scope_label
+            results = research_output.results
+        elif compare_targets:
+            outputs = compare_research(
+                topic,
+                compare_targets,
+                questions,
+                verbose=args.verbose,
+                since=since,
+            )
             results, label = _merge_compare_results(outputs, compare_str)
         else:
-            research_output = research(topic, questions, scope=scope, verbose=args.verbose, since=since)
+            research_output = research(
+                topic,
+                questions,
+                scope=scope,
+                verbose=args.verbose,
+                since=since,
+            )
             label = research_output.scope_label
             results = research_output.results
 
@@ -584,6 +622,11 @@ Examples:
                                  help="Per-tool results limit (default: 25)")
     signals_parser.add_argument("--since", metavar="YYYY-MM-DD", default=None,
                                  help="Filter results to items published on or after this date")
+    signals_parser.add_argument(
+        "--direct",
+        action="store_true",
+        help="Run each available source adapter once without Gemini",
+    )
     signals_parser.add_argument("-v", "--verbose", action="store_true")
     signals_parser.set_defaults(func=cmd_signals)
 

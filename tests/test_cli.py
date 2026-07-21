@@ -1,6 +1,7 @@
 """Tests for CLI scope parsing and validation."""
 
 import json
+from types import SimpleNamespace
 
 import cli
 import pytest
@@ -86,6 +87,12 @@ class TestCheckEnv:
         missing = check_env({"type": "all", "states": []})
         assert missing == []
 
+    def test_direct_signals_do_not_require_a_model_key(self, monkeypatch):
+        monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
+        monkeypatch.setenv("EXA_API_KEY", "x")
+
+        assert check_env({"type": "federal", "states": []}, require_model=False) == []
+
 
 class TestTopics:
     def test_load_topics_prefers_current_directory(self, monkeypatch, tmp_path):
@@ -119,6 +126,51 @@ class TestTopics:
         monkeypatch.setenv("LEGISCAN_API_KEY", "x")
         names = [d.name for d in get_tool_declarations({"type": "all", "states": []})]
         assert "state_legislation_search" not in names
+
+
+class TestSignals:
+    def test_direct_mode_uses_source_fanout_without_gemini(self, monkeypatch, capsys):
+        results = ResearchResults(
+            findings=[
+                Finding(
+                    title="Federal caregiver bill",
+                    snippet="Referred to committee",
+                    url="https://www.congress.gov/bill/119th-congress/house-bill/1",
+                    source_type="CONGRESS",
+                )
+            ],
+            tool_usage={"congress_search": 1},
+        )
+        seen = {}
+
+        def direct(topic, *, scope, since=None, verbose=False):
+            seen.update(topic=topic, scope=scope, since=since, verbose=verbose)
+            return ResearchOutput(text="", results=results, scope_label="federal")
+
+        monkeypatch.setattr(cli, "direct_research", direct)
+        monkeypatch.setattr(cli, "check_env", lambda scope, compare=None, require_model=True: [])
+        monkeypatch.setattr(cli, "set_results_limit", lambda _limit: None)
+        args = SimpleNamespace(
+            preset=None,
+            topic="family caregiver policy",
+            scope="federal",
+            compare=None,
+            questions=None,
+            limit=1,
+            since="2026-01-01",
+            verbose=False,
+            direct=True,
+        )
+
+        assert cli.cmd_signals(args) == 0
+        payload = json.loads(capsys.readouterr().out)
+        assert payload["counts"]["signals"] == 1
+        assert seen == {
+            "topic": "family caregiver policy",
+            "scope": {"type": "federal", "states": []},
+            "since": "2026-01-01",
+            "verbose": False,
+        }
 
 
 class TestRunPipeline:

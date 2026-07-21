@@ -1,11 +1,16 @@
 # civic-cli-tools
 
-Policy research CLI. Generates evidence-based briefs from 8 government and academic sources.
+Policy-source adapters and an optional brief-writing CLI for eight government,
+web, and academic sources.
 
+```text
+civic signals --direct → source adapters → normalized signals JSON
+civic <topic>           → Gemini research → write/review → brief or JSON
 ```
-topic → research (8 APIs) → write → [review] → report.md
-                                              → stdout (JSON)
-```
+
+Automation should prefer `signals --direct`: it performs one bounded fan-out
+across the source adapters without model orchestration or repository writes.
+Workflow owners such as Hound supply planning, approvals, and durable state.
 
 ## Install
 
@@ -18,7 +23,7 @@ cp .env.example .env  # add API keys
 
 | Key | When Needed | Get It | Cost |
 |-----|-------------|--------|------|
-| GOOGLE_API_KEY | Always | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) | Free |
+| GOOGLE_API_KEY | Brief/research mode only; not used by `signals --direct` | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) | Free |
 | EXA_API_KEY | When scope includes web search (`all`, `federal`, `state:XX`, `news`) | [dashboard.exa.ai/api-keys](https://dashboard.exa.ai/api-keys) | Free tier |
 | CONGRESS_GOV_API_KEY | Optional — unlocks Congress.gov source | [api.congress.gov/sign-up](https://api.congress.gov/sign-up) | Free |
 | OPENSTATES_API_KEY | Optional — unlocks OpenStates source | [openstates.org/accounts/register](https://openstates.org/accounts/register/) | Free |
@@ -47,8 +52,10 @@ echo "Paid leave" | civic -                    # read topic from stdin
 civic doctor                                   # validate required + optional API keys
 ```
 
-Required for the chosen run: `GOOGLE_API_KEY` always, plus `EXA_API_KEY` when the selected scope includes web search.
-Optional (advisory only): `CONGRESS_GOV_API_KEY`, `OPENSTATES_API_KEY`, `LEGISCAN_API_KEY`, `REGULATIONS_GOV_API_KEY`, `CENSUS_API_KEY` — each unlocks or improves a specific source without blocking the rest of the run.
+Brief/research mode requires `GOOGLE_API_KEY`. Direct signals mode does not.
+`EXA_API_KEY` is required when the selected scope includes web search. Optional
+source keys unlock or improve Congress.gov, OpenStates/LegiScan,
+Regulations.gov, and Census without blocking keyless sources.
 
 ### Fetch URL
 
@@ -57,21 +64,21 @@ civic get https://example.com/bill.pdf         # raw body to stdout
 civic get https://example.com -f json          # JSON envelope (status, headers, content)
 ```
 
-### Signals Output (for web-pulse and other consumers)
+### Signals output
 
 ```bash
-civic signals pulse-policy-weekly               # preset → atomic per-finding JSON
-civic signals --topic "family caregiver policy" -s policy --limit 2
+civic signals --direct --topic "family caregiver policy" -s federal --limit 2
+civic signals pulse-policy-weekly # model-selected legacy/preset mode
 ```
 
-`civic signals` reuses the research loop but skips write/review and emits the atomic JSON envelope directly. It is used by GiveCare's `apps/web-pulse/scripts/pulse_wiki_ingest_civic.py`.
-Pulse's `pulse-policy-weekly` preset now runs with `scope = "policy"`, so it favors Congress, Federal Register, Regulations.gov, court, and state-legislation movement over web, academic, or Census background material.
+`--direct` runs every available adapter for the selected scope once, in
+parallel, and emits the stable atomic signals envelope. It does not call Gemini,
+write a report, or review results. This is the supported integration primitive
+for Hound and other workflow owners.
 
-Signal inputs:
-- positional `preset` from `topics.toml`, or `--topic` for ad-hoc use
-- with `--topic`: `-s/--scope`, `-c/--compare`, `-q/--questions`
-- optional: `--limit`, `--since YYYY-MM-DD`, `-v`
-- Pulse currently shells `civic signals <preset> [--limit N] [--since YYYY-MM-DD]`
+Without `--direct`, signals mode retains the model-selected research loop for
+interactive use. Direct mode accepts one preset or `--topic`, plus `--scope`,
+`--limit`, `--since`, and `--verbose`; compare mode remains model-owned.
 
 Bill-like signals include movement metadata when available:
 - `status` — latest bill/rule action text
@@ -208,6 +215,7 @@ tests/
 
 | Date | Change |
 |------|--------|
+| **2026-07-21** | **v0.6.1** — deterministic `signals --direct` source fan-out for Hound and other workflow owners; no Gemini required |
 | **2026-05-07** | **code quality + features** — `--since` date filter (web, congress, fed-register, regulations, court), `--no-review` flag, URL-based finding dedup (bill sources exempt), dynamic RESEARCHER prompt scoped to available tools, cache key strips API keys, tool declarations cached by scope |
 | **2026-04-22** | **post-audit fixes** — Rich JSON-mode compatibility, Exa SDK update, signals docs for web-pulse, env-aware source gating, packaged presets, CI, LegiScan single-state fallback |
 | **2026-04-09** | **v0.6** — 8th source (Regulations.gov), `--format json`, parallel execution, retry/caching, 18 Census variables, 41 tests |

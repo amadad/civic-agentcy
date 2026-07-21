@@ -17,8 +17,8 @@ uv run civic "topic" --since 2026-01-01  # filter results to items on/after date
 uv run civic "topic" --no-review # skip reviewer pass (faster)
 uv run civic -                   # read topic from stdin
 uv run civic run <preset>        # run named preset (markdown brief)
-uv run civic signals <preset>    # atomic per-finding JSON (for web-pulse, etc.)
-uv run civic signals --topic "X" # ad-hoc atomic signals
+uv run civic signals --direct --topic "X" -s federal # source fan-out; no Gemini
+uv run civic signals <preset>    # model-selected signals for interactive use
 uv run civic topics              # list presets
 uv run civic doctor              # validate required/optional API keys
 uv run civic get <url>           # fetch URL content (raw | JSON envelope)
@@ -28,7 +28,11 @@ uv run civic cache clear         # purge cached responses
 
 Honors `NO_COLOR` and auto-disables Rich formatting when stdout is not a TTY.
 
-`civic signals` accepts either a preset name from `topics.toml` or `--topic` for ad-hoc use. The ad-hoc path also accepts `--scope`, `--compare`, `--questions`, `--limit`, `--since`, and `--verbose`. Signals mode skips write/review and emits the research findings as atomic JSON. For Pulse, `pulse-policy-weekly` now uses `scope = "policy"` and emits movement-oriented metadata such as `status`, `signal_kind`, `pending`, and movement-aware IDs for bill-like items.
+`civic signals --direct` is the automation seam: it invokes each available
+adapter for the selected scope once, in parallel, and emits atomic JSON without
+Gemini or writes. Hound owns workflow state, approvals, and canonical changes.
+Signals mode without `--direct` retains model-selected research for interactive
+use. Both paths preserve movement metadata and movement-aware bill IDs.
 
 ## Files
 

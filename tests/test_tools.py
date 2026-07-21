@@ -163,6 +163,43 @@ class TestCongressSearch:
         assert len(result.findings) == 1
         assert result.findings[0].date == "2025-02-01"
 
+    def test_enforces_since_cutoff_when_provider_returns_older_bills(self, mock_fetch, monkeypatch):
+        monkeypatch.setenv("CONGRESS_GOV_API_KEY", "test-key")
+        mock_fetch.return_value = {
+            "bills": [
+                {
+                    "type": "HCONRES",
+                    "number": "2",
+                    "title": "Stale result",
+                    "congress": 110,
+                    "latestAction": {
+                        "text": "Referred to committee",
+                        "actionDate": "2008-06-24",
+                    },
+                    "url": "https://api.congress.gov/v3/bill/110/hconres/2",
+                    "introducedDate": "2007-01-05",
+                },
+                {
+                    "type": "HR",
+                    "number": "1234",
+                    "title": "Current caregiver bill",
+                    "congress": 119,
+                    "latestAction": {
+                        "text": "Introduced",
+                        "actionDate": "2026-02-01",
+                    },
+                    "url": "https://api.congress.gov/v3/bill/119/hr/1234",
+                    "introducedDate": "2026-02-01",
+                },
+            ]
+        }
+
+        result = CongressSearch().execute(query="caregiver", since="2026-01-01")
+
+        assert [finding.title for finding in result.findings] == [
+            "HR1234: Current caregiver bill"
+        ]
+
     def test_missing_api_key(self, monkeypatch):
         monkeypatch.delenv("CONGRESS_GOV_API_KEY", raising=False)
         result = CongressSearch().execute(query="test")

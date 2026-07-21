@@ -10,7 +10,14 @@ from rich.console import Console
 
 from prompts import COMPARATOR, REVIEWER, WRITER, build_researcher_prompt
 from scopes import DEFAULT_SCOPE, Scope, compare_target_scope, scope_label
-from tools import Finding, ResearchOutput, ResearchResults, ToolRegistry, get_tool_declarations
+from tools import (
+    Finding,
+    ResearchOutput,
+    ResearchResults,
+    ToolRegistry,
+    get_available_tool_names,
+    get_tool_declarations,
+)
 
 # google-genai args type: dict[str, Any] per FunctionCall.args field definition
 _FunctionCallArgs = dict[str, object]
@@ -172,6 +179,43 @@ def research(
         results=results,
         scope_label=label,
     )
+
+
+def direct_research(
+    topic: str,
+    *,
+    scope: Scope,
+    since: str | None = None,
+    verbose: bool = False,
+) -> ResearchOutput:
+    """Run each available source adapter once without model orchestration."""
+    registry = ToolRegistry(scope)
+    tool_names = get_available_tool_names(scope)
+    results = ResearchResults()
+
+    def arguments(tool_name: str) -> dict[str, object]:
+        if tool_name == "census_search":
+            geography = "us"
+            if scope["type"] == "state" and scope.get("states"):
+                geography = f"state:{scope['states'][0]}"
+            return {"topic": topic, "geography": geography, "since": since}
+        if tool_name == "state_legislation_search":
+            state = scope.get("states", [None])[0] if scope.get("states") else None
+            return {"query": topic, "state": state, "since": since}
+        return {"query": topic, "since": since}
+
+    def execute(tool_name: str):
+        if verbose:
+            console.print(f"  [dim]{tool_name}: {topic}[/]")
+        findings, _formatted = registry.execute(tool_name, arguments(tool_name))
+        return tool_name, findings
+
+    with ThreadPoolExecutor(max_workers=max(1, len(tool_names))) as pool:
+        for tool_name, findings in pool.map(execute, tool_names):
+            for finding in findings:
+                results.add(finding, tool_name)
+
+    return ResearchOutput(text="", results=results, scope_label=scope_label(scope))
 
 
 def write_brief(topic: str, research_output: ResearchOutput, include_appendix: bool = True) -> str:
